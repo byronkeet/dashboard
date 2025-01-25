@@ -21,6 +21,8 @@ import { Review, PaginatedResponse } from "@/lib/types";
 import { getReviews } from "@/lib/reviews";
 import { cn } from "@/lib/utils";
 import { useDateRange } from "@/lib/context/date-range-context";
+import { useStatsData } from "@/lib/hooks/useStatsData";
+import { StatCard } from "@/components/dashboard/stat-card";
 
 const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
@@ -29,69 +31,17 @@ export default function Dashboard() {
 	const [reviews, setReviews] = useState<any>(null);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
-	const [isLoading, setIsLoading] = useState(false);
 	const [indemnityData, setIndemnityData] = useState<{
 		currentPeriod: any[];
 		previousPeriod: any[];
 	} | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
-	// Calculate stats from indemnity data
-	const calculateStats = () => {
-		if (!indemnityData || !reviews) {
-			return {
-				totalGuests: "0",
-				totalSubmissions: "0",
-				guestsChange: "0%",
-				submissionsChange: "0%",
-			};
-		}
-
-		// Calculate guest stats
-		const currentGuests = indemnityData.currentPeriod.length;
-		const previousGuests = indemnityData.previousPeriod.length;
-		let guestsPercentageChange = 0;
-		if (previousGuests > 0) {
-			guestsPercentageChange =
-				((currentGuests - previousGuests) / previousGuests) * 100;
-		}
-
-		// Calculate submission stats
-		const currentSubmissions = reviews.currentPeriod.length;
-		const previousSubmissions = reviews.previousPeriod.length;
-		let submissionsPercentageChange = 0;
-		if (previousSubmissions > 0) {
-			submissionsPercentageChange =
-				((currentSubmissions - previousSubmissions) /
-					previousSubmissions) *
-				100;
-		}
-
-		return {
-			totalGuests: currentGuests.toString(),
-			totalSubmissions: currentSubmissions.toString(),
-			guestsChange: `${
-				guestsPercentageChange > 0 ? "+" : ""
-			}${guestsPercentageChange.toFixed(0)}%`,
-			submissionsChange: `${
-				submissionsPercentageChange > 0 ? "+" : ""
-			}${submissionsPercentageChange.toFixed(0)}%`,
-		};
-	};
-
-	const stats = [
-		{
-			title: "Total Guests Check In",
-			value: calculateStats().totalGuests,
-			change: calculateStats().guestsChange,
-		},
-		{
-			title: "Total Submissions",
-			value: calculateStats().totalSubmissions,
-			change: calculateStats().submissionsChange,
-		},
-		{ title: "Average OTS", value: "80%", change: "+10%" },
-		{ title: "Average WRS", value: "90%", change: "-10%" },
-	];
+	// Use the custom hook for stats calculations
+	const { guestStats, submissionStats, error } = useStatsData(
+		indemnityData,
+		reviews
+	);
 
 	// Department performance data
 	const departmentData = [
@@ -349,35 +299,20 @@ export default function Dashboard() {
 				<DualDateRangePicker />
 			</div>
 
-			{/* Stats Cards */}
-			<div className='grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4'>
-				{stats.map((stat, index) => (
-					<Card
-						key={index}
-						className={index === 0 ? "bg-gray-900 text-white" : ""}
-					>
-						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-							<CardTitle className='text-sm font-medium'>
-								{stat.title}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-2xl font-bold'>
-								{stat.value}
-							</div>
-							<p
-								className={cn(
-									"text-xs",
-									stat.change.startsWith("+")
-										? "text-green-600"
-										: "text-red-600"
-								)}
-							>
-								{stat.change}
-							</p>
-						</CardContent>
-					</Card>
-				))}
+			<div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+				<StatCard
+					title='Total Guests Check In'
+					value={guestStats.value}
+					change={guestStats.change}
+					isLoading={isLoading}
+				/>
+				<StatCard
+					title='Total Submissions'
+					value={submissionStats.value}
+					change={submissionStats.change}
+					isLoading={isLoading}
+				/>
+				{/* Add other stat cards */}
 			</div>
 
 			{/* Charts */}
