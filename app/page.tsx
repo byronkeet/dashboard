@@ -27,59 +27,34 @@ import { DepartmentPerformanceChart } from "@/components/dashboard/department-pe
 import { useDepartmentPerformance } from "@/lib/hooks/useDepartmentPerformance";
 import { useSentimentRatio } from "@/lib/hooks/useSentimentRatio";
 import { SentimentRatioChart } from "@/components/dashboard/sentiment-ratio-chart";
+import { useReviews } from "@/lib/hooks/useReviews";
+import { RecentReviewsTable } from "@/components/dashboard/recent-reviews-table";
 
 const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
 export default function Dashboard() {
 	const { currentPeriod, comparablePeriod } = useDateRange();
-	const [reviews, setReviews] = useState<any>(null);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
 	const [indemnityData, setIndemnityData] = useState<{
 		currentPeriod: any[];
 		previousPeriod: any[];
 	} | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Use the custom hooks for stats calculations
+	// First, get the reviews data
+	const {
+		reviews,
+		isLoading: reviewsLoading,
+		currentPage,
+		totalPages,
+		setCurrentPage,
+	} = useReviews(currentPeriod);
+
+	// Then use the reviews data in other hooks
 	const { guestStats, submissionStats, otsStats, wrsStats, error } =
 		useStatsData(indemnityData, reviews);
 
-	// Use the department performance hook with null check
 	const departmentPerformance = useDepartmentPerformance(reviews);
-
-	// AI Sentiment data
 	const sentimentRatio = useSentimentRatio(reviews);
-
-	// Add new useEffect for fetching review data
-	useEffect(() => {
-		const fetchReviewData = async () => {
-			try {
-				setIsLoading(true);
-				const params = new URLSearchParams({
-					from: currentPeriod.from.toISOString(),
-					to: currentPeriod.to.toISOString(),
-					compareFrom: comparablePeriod.from.toISOString(),
-					compareTo: comparablePeriod.to.toISOString(),
-				});
-
-				const response = await fetch(`/api/reviews?${params}`);
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-
-				const { data } = await response.json();
-				console.log("Review data:", data);
-				setReviews(data);
-			} catch (error) {
-				console.error("Error fetching review data:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchReviewData();
-	}, [currentPeriod, comparablePeriod]);
 
 	useEffect(() => {
 		const fetchIndemnityData = async () => {
@@ -110,147 +85,6 @@ export default function Dashboard() {
 
 		fetchIndemnityData();
 	}, [currentPeriod, comparablePeriod]);
-
-	const loadReviews = async (page: number) => {
-		setIsLoading(true);
-		try {
-			const response = await getReviews(page);
-			setReviews(response.data);
-			setTotalPages(response.metadata.totalPages);
-		} catch (error) {
-			console.error("Error loading reviews:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const handlePageChange = (page: number) => {
-		setCurrentPage(page);
-	};
-
-	const renderPaginationButtons = () => {
-		const buttons = [];
-		const maxVisiblePages = 5;
-		let startPage = Math.max(
-			1,
-			currentPage - Math.floor(maxVisiblePages / 2)
-		);
-		let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-		if (endPage - startPage + 1 < maxVisiblePages) {
-			startPage = Math.max(1, endPage - maxVisiblePages + 1);
-		}
-
-		// Previous button
-		buttons.push(
-			<button
-				key='prev'
-				onClick={() => handlePageChange(currentPage - 1)}
-				disabled={currentPage === 1}
-				className={cn(
-					"px-3 py-1 rounded-md",
-					currentPage === 1
-						? "opacity-50 cursor-not-allowed"
-						: "hover:bg-gray-100"
-				)}
-			>
-				Previous
-			</button>
-		);
-
-		// First page
-		if (startPage > 1) {
-			buttons.push(
-				<button
-					key={1}
-					onClick={() => handlePageChange(1)}
-					className='px-3 py-1 rounded-md hover:bg-gray-100'
-				>
-					1
-				</button>
-			);
-			if (startPage > 2) {
-				buttons.push(<span key='dots1'>...</span>);
-			}
-		}
-
-		// Page numbers
-		for (let i = startPage; i <= endPage; i++) {
-			buttons.push(
-				<button
-					key={i}
-					onClick={() => handlePageChange(i)}
-					className={cn(
-						"px-3 py-1 rounded-md",
-						currentPage === i
-							? "bg-gray-900 text-white"
-							: "hover:bg-gray-100"
-					)}
-				>
-					{i}
-				</button>
-			);
-		}
-
-		// Last page
-		if (endPage < totalPages) {
-			if (endPage < totalPages - 1) {
-				buttons.push(<span key='dots2'>...</span>);
-			}
-			buttons.push(
-				<button
-					key={totalPages}
-					onClick={() => handlePageChange(totalPages)}
-					className='px-3 py-1 rounded-md hover:bg-gray-100'
-				>
-					{totalPages}
-				</button>
-			);
-		}
-
-		// Next button
-		buttons.push(
-			<button
-				key='next'
-				onClick={() => handlePageChange(currentPage + 1)}
-				disabled={currentPage === totalPages}
-				className={cn(
-					"px-3 py-1 rounded-md",
-					currentPage === totalPages
-						? "opacity-50 cursor-not-allowed"
-						: "hover:bg-gray-100"
-				)}
-			>
-				Next
-			</button>
-		);
-
-		return buttons;
-	};
-
-	const CustomTooltip = ({
-		active,
-		payload,
-		label,
-	}: TooltipProps<number, string>) => {
-		if (active && payload && payload.length) {
-			return (
-				<div className='bg-white p-4 rounded-lg shadow-lg border border-gray-200'>
-					<p className='text-sm font-medium text-gray-900'>{label}</p>
-					{payload.map((entry) => (
-						<p
-							key={entry.name}
-							className='text-sm'
-							style={{ color: entry.color }}
-						>
-							{entry.name}: {entry.value}
-						</p>
-					))}
-				</div>
-			);
-		}
-		return null;
-	};
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6'>
@@ -309,93 +143,13 @@ export default function Dashboard() {
 					<CardTitle>Recent Reviews</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className='relative w-full overflow-x-auto'>
-						<table className='w-full text-sm text-left'>
-							<thead className='bg-gray-50'>
-								<tr>
-									<th className='px-4 py-3 font-medium'>
-										Name
-									</th>
-									<th className='px-4 py-3 font-medium'>
-										Review Date
-									</th>
-									<th className='px-4 py-3 font-medium'>
-										OTS
-									</th>
-									<th className='px-4 py-3 font-medium'>
-										WES
-									</th>
-									<th className='px-4 py-3 font-medium'>
-										Would Recommend
-									</th>
-									<th className='px-4 py-3 font-medium'>
-										Details
-									</th>
-								</tr>
-							</thead>
-							<tbody className='divide-y'>
-								{isLoading ? (
-									<tr>
-										<td
-											colSpan={6}
-											className='px-4 py-8 text-center'
-										>
-											Loading reviews...
-										</td>
-									</tr>
-								) : !reviews?.currentPeriod ||
-								  reviews.currentPeriod.length === 0 ? (
-									<tr>
-										<td
-											colSpan={6}
-											className='px-4 py-8 text-center'
-										>
-											No reviews found
-										</td>
-									</tr>
-								) : (
-									reviews.currentPeriod.map((review) => (
-										<tr
-											key={review.id}
-											className='hover:bg-gray-50'
-										>
-											<td className='px-4 py-3'>
-												{review["Guest Name"]}
-											</td>
-											<td className='px-4 py-3'>
-												{review["Submitted On (UTC)"]}
-											</td>
-											<td className='px-4 py-3'>
-												{
-													review[
-														"Overall Trip Experience"
-													]
-												}
-											</td>
-											<td className='px-4 py-3'>
-												{review["Would Exceed Score"]}
-											</td>
-											<td className='px-4 py-3'>
-												{review["Would Recommend"]
-													? "Yes"
-													: "No"}
-											</td>
-											<td className='px-4 py-3'>
-												<button className='text-blue-600 hover:underline'>
-													Details
-												</button>
-											</td>
-										</tr>
-									))
-								)}
-							</tbody>
-						</table>
-
-						{/* Pagination */}
-						<div className='flex items-center justify-center space-x-2 py-4'>
-							{renderPaginationButtons()}
-						</div>
-					</div>
+					<RecentReviewsTable
+						data={reviews}
+						isLoading={reviewsLoading}
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={setCurrentPage}
+					/>
 				</CardContent>
 			</Card>
 		</div>
