@@ -38,10 +38,8 @@ export default function Dashboard() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	// Use the custom hook for stats calculations
-	const { guestStats, submissionStats, otsStats, error } = useStatsData(
-		indemnityData,
-		reviews
-	);
+	const { guestStats, submissionStats, otsStats, wrsStats, error } =
+		useStatsData(indemnityData, reviews);
 
 	// Department performance data
 	const departmentData = [
@@ -319,7 +317,13 @@ export default function Dashboard() {
 					isLoading={isLoading}
 					tooltip='Overall Trip Score'
 				/>
-				{/* Add other stat cards */}
+				<StatCard
+					title='Average WRS'
+					value={wrsStats.value}
+					change={wrsStats.change}
+					isLoading={isLoading}
+					tooltip='Would Recommend Score'
+				/>
 			</div>
 
 			{/* Charts */}
@@ -470,7 +474,11 @@ export default function Dashboard() {
 												{review["Submitted On (UTC)"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review["Overall Trip Experience"]}
+												{
+													review[
+														"Overall Trip Experience"
+													]
+												}
 											</td>
 											<td className='px-4 py-3'>
 												{review["Would Exceed Score"]}

@@ -99,3 +99,38 @@ export function calculateOTSStats(data: {
 		change: formatPercentageChange(percentageChange),
 	};
 }
+
+export function calculateWRSStats(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): StatCalculation {
+	if (!data) {
+		return { value: "0", change: "0%" };
+	}
+
+	// Calculate current period WRS
+	const currentRecommends = data.currentPeriod.filter(
+		(review) =>
+			review["Would you recommend Tuludi to your friends?"] === true
+	).length;
+	const currentTotal = data.currentPeriod.length;
+	const currentWRS =
+		currentTotal > 0 ? (currentRecommends / currentTotal) * 100 : 0;
+
+	// Calculate previous period WRS
+	const previousRecommends = data.previousPeriod.filter(
+		(review) =>
+			review["Would you recommend Tuludi to your friends?"] === true
+	).length;
+	const previousTotal = data.previousPeriod.length;
+	const previousWRS =
+		previousTotal > 0 ? (previousRecommends / previousTotal) * 100 : 0;
+
+	// Calculate percentage change
+	const percentageChange = calculatePercentageChange(previousWRS, currentWRS);
+
+	return {
+		value: `${currentWRS.toFixed(0)}%`,
+		change: formatPercentageChange(percentageChange),
+	};
+}

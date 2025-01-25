@@ -3,6 +3,7 @@ import {
 	calculateGuestStats,
 	calculateSubmissionStats,
 	calculateOTSStats,
+	calculateWRSStats,
 	StatCalculation,
 } from "../calculations/stats";
 
@@ -10,6 +11,7 @@ interface StatsData {
 	guestStats: StatCalculation;
 	submissionStats: StatCalculation;
 	otsStats: StatCalculation;
+	wrsStats: StatCalculation;
 	isLoading: boolean;
 	error: Error | null;
 }
@@ -19,6 +21,7 @@ export function useStatsData(indemnityData: any, reviewData: any): StatsData {
 		guestStats: { value: "0", change: "0%" },
 		submissionStats: { value: "0", change: "0%" },
 		otsStats: { value: "0%", change: "0%" },
+		wrsStats: { value: "0%", change: "0%" },
 		isLoading: true,
 		error: null,
 	});
@@ -32,11 +35,13 @@ export function useStatsData(indemnityData: any, reviewData: any): StatsData {
 			const guestStats = calculateGuestStats(indemnityData);
 			const submissionStats = calculateSubmissionStats(reviewData);
 			const otsStats = calculateOTSStats(reviewData);
+			const wrsStats = calculateWRSStats(reviewData);
 
 			setStats({
 				guestStats,
 				submissionStats,
 				otsStats,
+				wrsStats,
 				isLoading: false,
 				error: null,
 			});
