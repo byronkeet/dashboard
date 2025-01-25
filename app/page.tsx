@@ -38,7 +38,7 @@ export default function Dashboard() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	// Use the custom hook for stats calculations
-	const { guestStats, submissionStats, error } = useStatsData(
+	const { guestStats, submissionStats, otsStats, error } = useStatsData(
 		indemnityData,
 		reviews
 	);
@@ -312,6 +312,13 @@ export default function Dashboard() {
 					change={submissionStats.change}
 					isLoading={isLoading}
 				/>
+				<StatCard
+					title='Average OTS'
+					value={otsStats.value}
+					change={otsStats.change}
+					isLoading={isLoading}
+					tooltip='Overall Trip Score'
+				/>
 				{/* Add other stat cards */}
 			</div>
 
@@ -463,7 +470,7 @@ export default function Dashboard() {
 												{review["Submitted On (UTC)"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review["Overall Trip Score"]}
+												{review["Overall Trip Experience"]}
 											</td>
 											<td className='px-4 py-3'>
 												{review["Would Exceed Score"]}

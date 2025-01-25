@@ -57,3 +57,45 @@ export function calculateSubmissionStats(data: {
 		change: formatPercentageChange(percentageChange),
 	};
 }
+
+export function calculateOTSStats(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): StatCalculation {
+	if (!data) {
+		return { value: "0", change: "0%" };
+	}
+
+	// Calculate current period average
+	const currentScores = data.currentPeriod
+		.map((review) => Number(review["Overall Trip Experience"]))
+		.filter((score) => !isNaN(score));
+
+	const currentAverage =
+		currentScores.length > 0
+			? currentScores.reduce((sum, score) => sum + score, 0) /
+			  currentScores.length
+			: 0;
+
+	// Calculate previous period average
+	const previousScores = data.previousPeriod
+		.map((review) => Number(review["Overall Trip Experience"]))
+		.filter((score) => !isNaN(score));
+
+	const previousAverage =
+		previousScores.length > 0
+			? previousScores.reduce((sum, score) => sum + score, 0) /
+			  previousScores.length
+			: 0;
+
+	// Calculate percentage change
+	const percentageChange = calculatePercentageChange(
+		previousAverage,
+		currentAverage
+	);
+
+	return {
+		value: `${(currentAverage * 10).toFixed(0)}%`, // Convert to percentage
+		change: formatPercentageChange(percentageChange),
+	};
+}
