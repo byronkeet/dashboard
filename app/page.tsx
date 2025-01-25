@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useStatsData } from "@/lib/hooks/useStatsData";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { DepartmentPerformanceChart } from "@/components/dashboard/department-performance-chart";
+import { useDepartmentPerformance } from "@/lib/hooks/useDepartmentPerformance";
 
 const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
@@ -37,48 +39,12 @@ export default function Dashboard() {
 	} | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Use the custom hook for stats calculations
+	// Use the custom hooks for stats calculations
 	const { guestStats, submissionStats, otsStats, wrsStats, error } =
 		useStatsData(indemnityData, reviews);
 
-	// Department performance data
-	const departmentData = [
-		{
-			name: "Jan",
-			accommodation: 400,
-			facilities: 240,
-			food: 320,
-			staff: 280,
-		},
-		{
-			name: "Feb",
-			accommodation: 300,
-			facilities: 139,
-			food: 220,
-			staff: 250,
-		},
-		{
-			name: "Mar",
-			accommodation: 200,
-			facilities: 980,
-			food: 420,
-			staff: 310,
-		},
-		{
-			name: "Apr",
-			accommodation: 278,
-			facilities: 390,
-			food: 520,
-			staff: 360,
-		},
-		{
-			name: "May",
-			accommodation: 189,
-			facilities: 480,
-			food: 380,
-			staff: 290,
-		},
-	];
+	// Use the department performance hook with null check
+	const departmentPerformance = useDepartmentPerformance(reviews);
 
 	// AI Sentiment data
 	const sentimentData = [
@@ -328,53 +294,10 @@ export default function Dashboard() {
 
 			{/* Charts */}
 			<div className='grid gap-4 grid-cols-1 md:grid-cols-7'>
-				<Card className='col-span-1 md:col-span-4'>
-					<CardHeader>
-						<CardTitle>Department Performance</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<LineChart data={departmentData}>
-								<CartesianGrid strokeDasharray='3 3' />
-								<XAxis dataKey='name' />
-								<YAxis />
-								<Tooltip content={<CustomTooltip />} />
-								<Legend />
-								<Line
-									type='monotone'
-									dataKey='accommodation'
-									name='Accommodation'
-									stroke='#000000'
-									strokeWidth={2}
-								/>
-								<Line
-									type='monotone'
-									dataKey='facilities'
-									name='Facilities'
-									stroke='#666666'
-									strokeWidth={2}
-								/>
-								<Line
-									type='monotone'
-									dataKey='food'
-									name='Food'
-									stroke='#999999'
-									strokeWidth={2}
-								/>
-								<Line
-									type='monotone'
-									dataKey='staff'
-									name='Staff'
-									stroke='#CCCCCC'
-									strokeWidth={2}
-								/>
-							</LineChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<DepartmentPerformanceChart
+					data={departmentPerformance.metrics}
+					isLoading={isLoading}
+				/>
 
 				<Card className='col-span-1 md:col-span-3'>
 					<CardHeader>
