@@ -11,7 +11,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDateRange } from "@/lib/context/date-range-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 
 interface DateRangePickerProps {
@@ -28,6 +28,11 @@ function SingleDateRangePicker({
 	const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(
 		value
 	);
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const handleSelect = (range: DateRange | undefined) => {
 		if (range) {
@@ -43,6 +48,21 @@ function SingleDateRangePicker({
 			});
 		}
 	};
+
+	if (!mounted) {
+		return (
+			<div className='grid gap-2'>
+				<Label>{label}</Label>
+				<Button
+					variant='outline'
+					className='w-full justify-start text-left font-normal'
+				>
+					<CalendarIcon className='mr-2 h-4 w-4' />
+					<span>Loading...</span>
+				</Button>
+			</div>
+		);
+	}
 
 	return (
 		<div className='grid gap-2'>
