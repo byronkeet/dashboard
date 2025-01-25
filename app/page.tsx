@@ -25,6 +25,8 @@ import { useStatsData } from "@/lib/hooks/useStatsData";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DepartmentPerformanceChart } from "@/components/dashboard/department-performance-chart";
 import { useDepartmentPerformance } from "@/lib/hooks/useDepartmentPerformance";
+import { useSentimentRatio } from "@/lib/hooks/useSentimentRatio";
+import { SentimentRatioChart } from "@/components/dashboard/sentiment-ratio-chart";
 
 const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
@@ -47,11 +49,7 @@ export default function Dashboard() {
 	const departmentPerformance = useDepartmentPerformance(reviews);
 
 	// AI Sentiment data
-	const sentimentData = [
-		{ name: "Positive", value: 70 },
-		{ name: "Neutral", value: 20 },
-		{ name: "Negative", value: 10 },
-	];
+	const sentimentRatio = useSentimentRatio(reviews);
 
 	// Add new useEffect for fetching review data
 	useEffect(() => {
@@ -299,39 +297,10 @@ export default function Dashboard() {
 					isLoading={isLoading}
 				/>
 
-				<Card className='col-span-1 md:col-span-3'>
-					<CardHeader>
-						<CardTitle>AI Sentiment Ratio</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<PieChart>
-								<Pie
-									data={sentimentData}
-									cx='50%'
-									cy='50%'
-									innerRadius={60}
-									outerRadius={80}
-									fill='#8884d8'
-									paddingAngle={5}
-									dataKey='value'
-								>
-									{sentimentData.map((entry, index) => (
-										<Cell
-											key={`cell-${index}`}
-											fill={COLORS[index % COLORS.length]}
-										/>
-									))}
-								</Pie>
-								<Tooltip />
-								<Legend />
-							</PieChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<SentimentRatioChart
+					data={sentimentRatio.metrics}
+					isLoading={isLoading}
+				/>
 			</div>
 
 			{/* Recent Reviews */}
