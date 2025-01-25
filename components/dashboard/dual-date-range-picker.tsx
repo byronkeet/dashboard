@@ -12,26 +12,32 @@ import {
 } from "@/components/ui/popover";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useState } from "react";
+import { Label } from "@/components/ui/label";
 
-export function DateRangePicker() {
-	const { dateRange, setDateRange } = useDateRange();
-	// Add temporary state for the date selection
+interface DateRangePickerProps {
+	label: string;
+	value: DateRange;
+	onChange: (range: DateRange) => void;
+}
+
+function SingleDateRangePicker({
+	label,
+	value,
+	onChange,
+}: DateRangePickerProps) {
 	const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(
-		dateRange
+		value
 	);
 
-	// Handle temporary date selection
 	const handleSelect = (range: DateRange | undefined) => {
 		if (range) {
 			setTempDateRange(range);
 		}
 	};
 
-	// Handle final selection when popover closes
 	const handleOpenChange = (open: boolean) => {
 		if (!open && tempDateRange?.from && tempDateRange?.to) {
-			// Only update the context when popover closes and we have both dates
-			setDateRange({
+			onChange({
 				from: tempDateRange.from,
 				to: tempDateRange.to,
 			});
@@ -40,22 +46,22 @@ export function DateRangePicker() {
 
 	return (
 		<div className='grid gap-2'>
+			<Label>{label}</Label>
 			<Popover onOpenChange={handleOpenChange}>
 				<PopoverTrigger asChild>
 					<Button
-						id='date'
 						variant={"outline"}
-						className='w-full md:w-[300px] justify-start text-left font-normal'
+						className='w-full justify-start text-left font-normal'
 					>
 						<CalendarIcon className='mr-2 h-4 w-4' />
-						{dateRange?.from ? (
-							dateRange.to ? (
+						{value?.from ? (
+							value.to ? (
 								<>
-									{format(dateRange.from, "LLL dd, y")} -{" "}
-									{format(dateRange.to, "LLL dd, y")}
+									{format(value.from, "LLL dd, y")} -{" "}
+									{format(value.to, "LLL dd, y")}
 								</>
 							) : (
-								format(dateRange.from, "LLL dd, y")
+								format(value.from, "LLL dd, y")
 							)
 						) : (
 							<span>Pick a date</span>
@@ -69,7 +75,7 @@ export function DateRangePicker() {
 					<Calendar
 						initialFocus
 						mode='range'
-						defaultMonth={dateRange?.from}
+						defaultMonth={value?.from}
 						selected={tempDateRange}
 						onSelect={handleSelect}
 						numberOfMonths={1}
@@ -78,7 +84,7 @@ export function DateRangePicker() {
 					<Calendar
 						initialFocus
 						mode='range'
-						defaultMonth={dateRange?.from}
+						defaultMonth={value?.from}
 						selected={tempDateRange}
 						onSelect={handleSelect}
 						numberOfMonths={2}
@@ -86,6 +92,34 @@ export function DateRangePicker() {
 					/>
 				</PopoverContent>
 			</Popover>
+		</div>
+	);
+}
+
+export function DualDateRangePicker() {
+	const {
+		currentPeriod,
+		comparablePeriod,
+		setCurrentPeriod,
+		setComparablePeriod,
+	} = useDateRange();
+
+	return (
+		<div className='flex flex-col md:flex-row gap-4'>
+			<div className='w-full md:w-[250px]'>
+				<SingleDateRangePicker
+					label='Current Period'
+					value={currentPeriod}
+					onChange={setCurrentPeriod}
+				/>
+			</div>
+			<div className='w-full md:w-[250px]'>
+				<SingleDateRangePicker
+					label='Comparable Period'
+					value={comparablePeriod}
+					onChange={setComparablePeriod}
+				/>
+			</div>
 		</div>
 	);
 }
