@@ -26,7 +26,7 @@ const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
 export default function Dashboard() {
 	const { currentPeriod, comparablePeriod } = useDateRange();
-	const [reviews, setReviews] = useState<Review[]>([]);
+	const [reviews, setReviews] = useState<any>(null);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [isLoading, setIsLoading] = useState(false);
@@ -37,30 +37,44 @@ export default function Dashboard() {
 
 	// Calculate stats from indemnity data
 	const calculateStats = () => {
-		if (!indemnityData)
+		if (!indemnityData || !reviews) {
 			return {
 				totalGuests: "0",
-				change: "0%",
+				totalSubmissions: "0",
+				guestsChange: "0%",
+				submissionsChange: "0%",
 			};
-
-		const currentTotal = indemnityData.currentPeriod.length;
-		const previousTotal = indemnityData.previousPeriod.length;
-
-		// Calculate percentage change
-		let percentageChange = 0;
-		if (previousTotal > 0) {
-			percentageChange =
-				((currentTotal - previousTotal) / previousTotal) * 100;
 		}
 
-		// Format the change with + or - sign
-		const changeFormatted = `${
-			percentageChange > 0 ? "+" : ""
-		}${percentageChange.toFixed(0)}%`;
+		// Calculate guest stats
+		const currentGuests = indemnityData.currentPeriod.length;
+		const previousGuests = indemnityData.previousPeriod.length;
+		let guestsPercentageChange = 0;
+		if (previousGuests > 0) {
+			guestsPercentageChange =
+				((currentGuests - previousGuests) / previousGuests) * 100;
+		}
+
+		// Calculate submission stats
+		const currentSubmissions = reviews.currentPeriod.length;
+		const previousSubmissions = reviews.previousPeriod.length;
+		let submissionsPercentageChange = 0;
+		if (previousSubmissions > 0) {
+			submissionsPercentageChange =
+				((currentSubmissions - previousSubmissions) /
+					previousSubmissions) *
+				100;
+		}
 
 		return {
-			totalGuests: currentTotal.toString(),
-			change: changeFormatted,
+			totalGuests: currentGuests.toString(),
+			totalSubmissions: currentSubmissions.toString(),
+			guestsChange: `${
+				guestsPercentageChange > 0 ? "+" : ""
+			}${guestsPercentageChange.toFixed(0)}%`,
+			submissionsChange: `${
+				submissionsPercentageChange > 0 ? "+" : ""
+			}${submissionsPercentageChange.toFixed(0)}%`,
 		};
 	};
 
@@ -68,9 +82,13 @@ export default function Dashboard() {
 		{
 			title: "Total Guests Check In",
 			value: calculateStats().totalGuests,
-			change: calculateStats().change,
+			change: calculateStats().guestsChange,
 		},
-		{ title: "Total Submissions", value: "20", change: "-2%" },
+		{
+			title: "Total Submissions",
+			value: calculateStats().totalSubmissions,
+			change: calculateStats().submissionsChange,
+		},
 		{ title: "Average OTS", value: "80%", change: "+10%" },
 		{ title: "Average WRS", value: "90%", change: "-10%" },
 	];
@@ -121,9 +139,35 @@ export default function Dashboard() {
 		{ name: "Negative", value: 10 },
 	];
 
+	// Add new useEffect for fetching review data
 	useEffect(() => {
-		loadReviews(currentPage);
-	}, [currentPage]);
+		const fetchReviewData = async () => {
+			try {
+				setIsLoading(true);
+				const params = new URLSearchParams({
+					from: currentPeriod.from.toISOString(),
+					to: currentPeriod.to.toISOString(),
+					compareFrom: comparablePeriod.from.toISOString(),
+					compareTo: comparablePeriod.to.toISOString(),
+				});
+
+				const response = await fetch(`/api/reviews?${params}`);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const { data } = await response.json();
+				console.log("Review data:", data);
+				setReviews(data);
+			} catch (error) {
+				console.error("Error fetching review data:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchReviewData();
+	}, [currentPeriod, comparablePeriod]);
 
 	useEffect(() => {
 		const fetchIndemnityData = async () => {
@@ -461,7 +505,8 @@ export default function Dashboard() {
 											Loading reviews...
 										</td>
 									</tr>
-								) : reviews.length === 0 ? (
+								) : !reviews?.currentPeriod ||
+								  reviews.currentPeriod.length === 0 ? (
 									<tr>
 										<td
 											colSpan={6}
@@ -471,25 +516,25 @@ export default function Dashboard() {
 										</td>
 									</tr>
 								) : (
-									reviews.map((review) => (
+									reviews.currentPeriod.map((review) => (
 										<tr
 											key={review.id}
 											className='hover:bg-gray-50'
 										>
 											<td className='px-4 py-3'>
-												{review.name}
+												{review["Guest Name"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review.date}
+												{review["Submitted On (UTC)"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review.ots}
+												{review["Overall Trip Score"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review.wes}
+												{review["Would Exceed Score"]}
 											</td>
 											<td className='px-4 py-3'>
-												{review.recommend
+												{review["Would Recommend"]
 													? "Yes"
 													: "No"}
 											</td>
