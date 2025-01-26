@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DateRangePicker } from "@/components/dashboard/date-range-picker";
+import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
 import { useState } from "react";
 import {
 	XAxis,
@@ -13,6 +13,8 @@ import {
 	BarChart,
 	Bar,
 } from "recharts";
+import { useDateRange } from "@/lib/context/date-range-context";
+import { useReviews } from "@/lib/hooks/useReviews";
 
 type StaffMention = {
 	name: string;
@@ -27,10 +29,14 @@ type FacilityComment = {
 };
 
 export default function FacilitiesStaffPage() {
-	const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-		from: new Date(),
-		to: new Date(),
-	});
+	const { currentPeriod, comparablePeriod, onDateRangeChange } =
+		useDateRange();
+
+	const {
+		currentPeriod: currentPeriodReviews,
+		previousPeriod: previousPeriodReviews,
+		isLoading: reviewsLoading,
+	} = useReviews(currentPeriod);
 
 	const [staffMentions] = useState<StaffMention[]>([
 		{ name: "Eve", count: 11 },
@@ -85,9 +91,15 @@ export default function FacilitiesStaffPage() {
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
 			<div className='flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0'>
 				<h2 className='text-2xl md:text-3xl font-bold tracking-tight'>
-					Facilities & Staff Dashboard
+					Facilities & Staff
 				</h2>
-				<DateRangePicker onRangeChange={setDateRange} />
+				<div className='flex items-center space-x-2'>
+					<DualDateRangePicker
+						currentPeriod={currentPeriod}
+						comparablePeriod={comparablePeriod}
+						onUpdate={onDateRangeChange}
+					/>
+				</div>
 			</div>
 
 			<div className='grid gap-4 grid-cols-1 md:grid-cols-3'>
