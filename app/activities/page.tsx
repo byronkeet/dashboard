@@ -22,8 +22,10 @@ import { useReviews } from "@/lib/hooks/useReviews";
 import {
 	calculateWESStats,
 	calculateGuideRatingStats,
+	calculateGuideMetrics,
 } from "@/lib/calculations/stats";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { GuidePerformanceChart } from "@/components/activities/guide-performance-chart";
 
 type GuideData = {
 	name: string;
@@ -69,6 +71,7 @@ export default function ActivitiesPage() {
 
 	const wesStats = calculateWESStats(reviewsData);
 	const guideRatingStats = calculateGuideRatingStats(reviewsData);
+	const guideMetrics = calculateGuideMetrics(reviewsData);
 
 	const [guideData] = useState<GuideData[]>([
 		{ name: "Amos", rating: 10, trips: 6 },
@@ -169,43 +172,11 @@ export default function ActivitiesPage() {
 					/>
 				</div>
 
-				<Card className='col-span-1 md:col-span-8'>
-					<CardHeader>
-						<CardTitle>Guide ratings vs Trips Taken</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<BarChart
-								data={guideData}
-								margin={{
-									top: 20,
-									right: 30,
-									left: 20,
-									bottom: 5,
-								}}
-							>
-								<CartesianGrid strokeDasharray='3 3' />
-								<XAxis dataKey='name' />
-								<YAxis />
-								<Tooltip content={<CustomTooltip />} />
-								<Legend />
-								<Bar
-									dataKey='rating'
-									name='Rating'
-									fill='#000000'
-								/>
-								<Bar
-									dataKey='trips'
-									name='Trips'
-									fill='#666666'
-								/>
-							</BarChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<GuidePerformanceChart
+					data={guideMetrics}
+					isLoading={reviewsLoading}
+				/>
+
 
 				{/* Second row */}
 				<Card className='col-span-1 md:col-span-6'>

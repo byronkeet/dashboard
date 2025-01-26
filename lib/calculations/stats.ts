@@ -218,3 +218,66 @@ export function calculateGuideRatingStats(data: {
 		change: formatPercentageChange(percentageChange),
 	};
 }
+
+export interface GuideMetric {
+	name: string;
+	rating: number;
+	previousRating: number;
+	trips: number;
+	previousTrips: number;
+}
+
+export function calculateGuideMetrics(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): GuideMetric[] {
+	if (!data) return [];
+
+	// Helper function to calculate metrics for a period
+	const calculatePeriodMetrics = (reviews: any[]) => {
+		const guideStats = reviews.reduce((acc, review) => {
+			const guideName = review["Your Guide"];
+			const rating = Number(review["Rate Your Guide"]) || 0;
+
+			if (!guideName) return acc;
+
+			if (!acc[guideName]) {
+				acc[guideName] = { totalRating: 0, count: 0 };
+			}
+
+			if (rating > 0) {
+				acc[guideName].totalRating += rating;
+				acc[guideName].count += 1;
+			}
+
+			return acc;
+		}, {} as Record<string, { totalRating: number; count: number }>);
+
+		return Object.entries(guideStats).map(([name, stats]) => ({
+			name,
+			rating: stats.count > 0 ? stats.totalRating / stats.count : 0,
+			trips: stats.count,
+		}));
+	};
+
+	const currentMetrics = calculatePeriodMetrics(data.currentPeriod);
+	const previousMetrics = calculatePeriodMetrics(data.previousPeriod);
+
+	// Combine current and previous metrics
+	return currentMetrics.map((current) => {
+		const previous = previousMetrics.find(
+			(p) => p.name === current.name
+		) || {
+			rating: 0,
+			trips: 0,
+		};
+
+		return {
+			name: current.name,
+			rating: current.rating,
+			previousRating: previous.rating,
+			trips: current.trips,
+			previousTrips: previous.trips,
+		};
+	});
+}
