@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
+import { PaginationNumbers } from "@/components/ui/pagination-numbers";
 
 interface Review {
 	id: string;
@@ -269,28 +270,12 @@ export function RecentReviewsTable({
 					</TableBody>
 				</Table>
 			</div>
-
-			{/* Pagination */}
-			<div className='flex items-center justify-center space-x-2'>
-				<Button
-					variant='outline'
-					size='sm'
-					onClick={() => onPageChange(currentPage - 1)}
-					disabled={currentPage === 1}
-				>
-					Previous
-				</Button>
-				<span className='text-sm'>
-					Page {currentPage} of {totalPages}
-				</span>
-				<Button
-					variant='outline'
-					size='sm'
-					onClick={() => onPageChange(currentPage + 1)}
-					disabled={currentPage === totalPages}
-				>
-					Next
-				</Button>
+			<div className='mt-4'>
+				<PaginationNumbers
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={onPageChange}
+				/>
 			</div>
 		</div>
 	);

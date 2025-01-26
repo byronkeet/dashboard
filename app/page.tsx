@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
 	XAxis,
 	YAxis,
@@ -40,21 +40,29 @@ export default function Dashboard() {
 	} | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// First, get the reviews data
 	const {
 		reviews,
+		currentPeriod: currentPeriodReviews,
+		previousPeriod: previousPeriodReviews,
 		isLoading: reviewsLoading,
 		currentPage,
 		totalPages,
 		setCurrentPage,
 	} = useReviews(currentPeriod);
 
-	// Then use the reviews data in other hooks
-	const { guestStats, submissionStats, otsStats, wrsStats, error } =
-		useStatsData(indemnityData, reviews);
+	const reviewsData = useMemo(
+		() => ({
+			currentPeriod: currentPeriodReviews,
+			previousPeriod: previousPeriodReviews,
+		}),
+		[currentPeriodReviews, previousPeriodReviews]
+	);
 
-	const departmentPerformance = useDepartmentPerformance(reviews);
-	const sentimentRatio = useSentimentRatio(reviews);
+	const { guestStats, submissionStats, otsStats, wrsStats, error } =
+		useStatsData(indemnityData, reviewsData);
+
+	const departmentPerformance = useDepartmentPerformance(reviewsData);
+	const sentimentRatio = useSentimentRatio(reviewsData);
 
 	useEffect(() => {
 		const fetchIndemnityData = async () => {

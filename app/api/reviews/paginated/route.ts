@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 		const fromDate = searchParams.get("from");
 		const toDate = searchParams.get("to");
 		const page = parseInt(searchParams.get("page") || "1");
-		const pageSize = 10;
+		const pageSize = 5;
 
 		if (!fromDate || !toDate) {
 			return NextResponse.json(
@@ -28,13 +28,21 @@ export async function GET(request: Request) {
 		const start = new Date(fromDate);
 		const end = new Date(toDate);
 
-		// Create Airtable formula for date range
-		const formula = `AND(
-      IS_AFTER({Submitted On (UTC)}, '${formatDate(start)}'),
-      IS_BEFORE({Submitted On (UTC)}, '${formatDate(end)}')
-    )`;
+		console.log("Fetching reviews from:", start, "to:", end);
 
-		// Fetch records for the date range
+		// Calculate the previous period
+		const periodDuration = end.getTime() - start.getTime();
+		const previousStart = new Date(start.getTime() - periodDuration);
+		const previousEnd = new Date(start);
+
+		const formula = `OR(
+			AND(IS_AFTER({Submitted On (UTC)}, '${formatDate(
+				previousStart
+			)}'), IS_BEFORE({Submitted On (UTC)}, '${formatDate(end)}'))
+		)`;
+
+		console.log("Airtable formula:", formula);
+
 		const records = await base(AIRTABLE_REVIEW_TABLE_NAME)
 			.select({
 				filterByFormula: formula,
@@ -42,33 +50,47 @@ export async function GET(request: Request) {
 			})
 			.all();
 
-		// Calculate pagination
-		const totalRecords = records.length;
+		console.log("Total records fetched:", records.length);
+
+		// Split records into current and previous periods
+		const currentPeriodRecords = records
+			.filter((record) => {
+				const date = new Date(record.fields["Submitted On (UTC)"]);
+				return date >= start && date <= end;
+			})
+			.map((record) => ({
+				id: record.id,
+				...record.fields,
+			}));
+
+		const previousPeriodRecords = records
+			.filter((record) => {
+				const date = new Date(record.fields["Submitted On (UTC)"]);
+				return date >= previousStart && date < start;
+			})
+			.map((record) => ({
+				id: record.id,
+				...record.fields,
+			}));
+
+		console.log("Current period records:", currentPeriodRecords.length);
+		console.log("Previous period records:", previousPeriodRecords.length);
+
+		// Calculate pagination for current period records only
+		const totalRecords = currentPeriodRecords.length;
 		const totalPages = Math.ceil(totalRecords / pageSize);
 		const startIndex = (page - 1) * pageSize;
 		const endIndex = startIndex + pageSize;
-
-		// Get records for current page
-		const paginatedRecords = records
-			.slice(startIndex, endIndex)
-			.map((record) => ({
-				id: record.id,
-				"Full Name": record.fields["Full Name"],
-				"Submitted On (UTC)": record.fields["Submitted On (UTC)"],
-				"Overall Trip Experience":
-					record.fields["Overall Trip Experience"],
-				"Overall Wildlife Experience":
-					record.fields["Overall Wildlife Experience"],
-				"Would you recommend Tuludi to your friends?":
-					record.fields[
-						"Would you recommend Tuludi to your friends?"
-					],
-				...record.fields, // Include all fields for the details view
-			}));
+		const paginatedRecords = currentPeriodRecords.slice(
+			startIndex,
+			endIndex
+		);
 
 		return NextResponse.json({
 			success: true,
 			reviews: paginatedRecords,
+			currentPeriod: currentPeriodRecords,
+			previousPeriod: previousPeriodRecords,
 			totalPages,
 			currentPage: page,
 			totalRecords,
