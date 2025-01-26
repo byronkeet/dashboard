@@ -23,9 +23,11 @@ import {
 	calculateWESStats,
 	calculateGuideRatingStats,
 	calculateGuideMetrics,
+	calculateWildlifeSightings,
 } from "@/lib/calculations/stats";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { GuidePerformanceChart } from "@/components/activities/guide-performance-chart";
+import { WildlifeSightingsChart } from "@/components/activities/wildlife-sightings-chart";
 
 type GuideData = {
 	name: string;
@@ -72,6 +74,7 @@ export default function ActivitiesPage() {
 	const wesStats = calculateWESStats(reviewsData);
 	const guideRatingStats = calculateGuideRatingStats(reviewsData);
 	const guideMetrics = calculateGuideMetrics(reviewsData);
+	const wildlifeMetrics = calculateWildlifeSightings(reviewsData);
 
 	const [guideData] = useState<GuideData[]>([
 		{ name: "Amos", rating: 10, trips: 6 },
@@ -177,45 +180,12 @@ export default function ActivitiesPage() {
 					isLoading={reviewsLoading}
 				/>
 
+				<WildlifeSightingsChart
+					data={wildlifeMetrics}
+					isLoading={reviewsLoading}
+				/>
 
 				{/* Second row */}
-				<Card className='col-span-1 md:col-span-6'>
-					<CardHeader>
-						<CardTitle>Wildlife Sightings</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<PieChart>
-								<Pie
-									data={wildlifeSightings}
-									cx='50%'
-									cy='50%'
-									outerRadius={130}
-									fill='#8884d8'
-									dataKey='value'
-									label
-								>
-									{wildlifeSightings.map((entry, index) => (
-										<Cell
-											key={`cell-${index}`}
-											fill={
-												WILDLIFE_COLORS[
-													index %
-														WILDLIFE_COLORS.length
-												]
-											}
-										/>
-									))}
-								</Pie>
-								<Legend />
-							</PieChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
-
 				<Card className='col-span-1 md:col-span-6'>
 					<CardHeader>
 						<CardTitle>Activity Comments</CardTitle>

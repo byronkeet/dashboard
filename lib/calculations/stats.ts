@@ -281,3 +281,50 @@ export function calculateGuideMetrics(data: {
 		};
 	});
 }
+
+export interface WildlifeMetric {
+	name: string;
+	value: number;
+	previousValue: number;
+}
+
+export function calculateWildlifeSightings(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): WildlifeMetric[] {
+	const calculatePeriodSightings = (reviews: any[]) => {
+		const sightings = reviews.reduce((acc, review) => {
+			const animals = (review["Key Sightings"] || "")
+				.split(",")
+				.map((animal: string) => animal.trim())
+				.filter(Boolean);
+
+			animals.forEach((animal: string) => {
+				acc[animal] = (acc[animal] || 0) + 1;
+			});
+
+			return acc;
+		}, {} as Record<string, number>);
+
+		return Object.entries(sightings).map(([name, value]) => ({
+			name,
+			value,
+		}));
+	};
+
+	const currentSightings = calculatePeriodSightings(data.currentPeriod);
+	const previousSightings = calculatePeriodSightings(data.previousPeriod);
+
+	return currentSightings
+		.map((current) => {
+			const previous = previousSightings.find(
+				(p) => p.name === current.name
+			) || { value: 0 };
+			return {
+				name: current.name,
+				value: current.value,
+				previousValue: previous.value,
+			};
+		})
+		.sort((a, b) => b.value - a.value); // Sort by highest count
+}
