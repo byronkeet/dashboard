@@ -620,3 +620,34 @@ export function calculateStaffMentions(data: {
 		}))
 		.sort((a, b) => b.mentions - a.mentions);
 }
+
+export interface FacilityComment {
+	name: string;
+	sentiment: "POSITIVE" | "NEGATIVE";
+	comment: string;
+	date: string;
+}
+
+export function calculateFacilityComments(data: {
+	currentPeriod: any[];
+}): FacilityComment[] {
+	return data.currentPeriod
+		.filter(
+			(review) =>
+				review[
+					"Any Further Comments or Recommendations about our hospitality?"
+				]
+		)
+		.map((review) => ({
+			name: review["Full Name"] || "Anonymous",
+			sentiment: review["Hospitality Comment Sentiment"] || "POSITIVE",
+			comment:
+				review[
+					"Any Further Comments or Recommendations about our hospitality?"
+				],
+			date: review["Submitted On (UTC)"],
+		}))
+		.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+		);
+}

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import {
 	XAxis,
 	YAxis,
@@ -24,8 +24,10 @@ import {
 	calculateStaffRating,
 	calculateOverallRating,
 	calculateStaffMentions,
+	calculateFacilityComments,
 } from "@/lib/calculations/stats";
 import { StaffMentionsChart } from "@/components/facilities/staff-mentions-chart";
+import { FacilityComments } from "@/components/facilities/facility-comments";
 
 type StaffMention = {
 	name: string;
@@ -48,23 +50,6 @@ export default function FacilitiesStaffPage() {
 		previousPeriod: previousPeriodReviews,
 		isLoading: reviewsLoading,
 	} = useReviews(currentPeriod);
-
-	const [facilityComments] = useState<FacilityComment[]>([
-		{
-			name: "Christan Bilney",
-			sentiment: "NEGATIVE",
-			comment:
-				"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-			date: "2 days ago",
-		},
-		{
-			name: "Hady Vanetti",
-			sentiment: "POSITIVE",
-			comment:
-				"Aliquam vel nibh iaculis, ornare purus sit amet, euismod dui. Cras sed tristique neque. Cras ornare dui lorem, vel rhoncus elit venenatis sit amet.",
-			date: "4 days ago",
-		},
-	]);
 
 	const CustomTooltip = ({
 		active,
@@ -105,6 +90,7 @@ export default function FacilitiesStaffPage() {
 	const staffRating = calculateStaffRating(reviewsData);
 	const overallRating = calculateOverallRating(reviewsData);
 	const staffMentions = calculateStaffMentions(reviewsData);
+	const facilityComments = calculateFacilityComments(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -184,44 +170,11 @@ export default function FacilitiesStaffPage() {
 					data={staffMentions}
 					isLoading={reviewsLoading}
 				/>
+				<FacilityComments
+					data={facilityComments}
+					isLoading={reviewsLoading}
+				/>
 			</div>
-
-			<Card>
-				<CardHeader>
-					<CardTitle>Facilities & Staff Comments</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div className='space-y-4 h-[350px] overflow-y-auto pr-4'>
-						{facilityComments.map((comment, index) => (
-							<div
-								key={index}
-								className='space-y-2 pb-4 border-b last:border-0'
-							>
-								<div className='flex items-center gap-2'>
-									<span
-										className={`px-2 py-1 rounded-md text-xs ${
-											comment.sentiment === "POSITIVE"
-												? "bg-green-100 text-green-800"
-												: "bg-red-100 text-red-800"
-										}`}
-									>
-										{comment.sentiment}
-									</span>
-									<span className='text-sm font-medium'>
-										{comment.name}
-									</span>
-									<span className='text-sm text-gray-500'>
-										{comment.date}
-									</span>
-								</div>
-								<p className='text-sm text-gray-600'>
-									{comment.comment}
-								</p>
-							</div>
-						))}
-					</div>
-				</CardContent>
-			</Card>
 		</div>
 	);
 }
