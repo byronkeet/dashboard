@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
 	XAxis,
 	YAxis,
@@ -15,6 +15,8 @@ import {
 } from "recharts";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { calculateRoomRating } from "@/lib/calculations/stats";
 
 type StaffMention = {
 	name: string;
@@ -87,6 +89,16 @@ export default function FacilitiesStaffPage() {
 		return null;
 	};
 
+	const reviewsData = useMemo(
+		() => ({
+			currentPeriod: currentPeriodReviews,
+			previousPeriod: previousPeriodReviews,
+		}),
+		[currentPeriodReviews, previousPeriodReviews]
+	);
+
+	const roomRating = calculateRoomRating(reviewsData);
+
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
 			<div className='flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0'>
@@ -103,14 +115,14 @@ export default function FacilitiesStaffPage() {
 			</div>
 
 			<div className='grid gap-4 grid-cols-1 md:grid-cols-3'>
-				<Card>
-					<CardHeader>
-						<CardTitle>Average Room Rating</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='text-3xl font-bold'>90%</div>
-					</CardContent>
-				</Card>
+				<StatCard
+					title='Average Room Rating'
+					value={roomRating.value}
+					change={roomRating.change}
+					isLoading={reviewsLoading}
+					tooltip='Average rating for accommodation'
+					format='percentage'
+				/>
 
 				<Card>
 					<CardHeader>
