@@ -328,3 +328,34 @@ export function calculateWildlifeSightings(data: {
 		})
 		.sort((a, b) => b.value - a.value); // Sort by highest count
 }
+
+export interface ActivityComment {
+	name: string;
+	sentiment: "POSITIVE" | "NEGATIVE";
+	comment: string;
+}
+
+export function calculateActivityComments(data: {
+	currentPeriod: any[];
+}): ActivityComment[] {
+	if (!data?.currentPeriod) return [];
+
+	return data.currentPeriod
+		.filter(
+			(review) =>
+				review[
+					"Any Further Comments or Recommendations about our wildlife experience?"
+				]
+		)
+		.map((review) => ({
+			name: review["Full Name"],
+			sentiment:
+				review["Wildlife Comment Sentiment"] === "Positive"
+					? "POSITIVE"
+					: "NEGATIVE",
+			comment:
+				review[
+					"Any Further Comments or Recommendations about our wildlife experience?"
+				],
+		}));
+}

@@ -24,34 +24,17 @@ import {
 	calculateGuideRatingStats,
 	calculateGuideMetrics,
 	calculateWildlifeSightings,
+	calculateActivityComments,
 } from "@/lib/calculations/stats";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { GuidePerformanceChart } from "@/components/activities/guide-performance-chart";
 import { WildlifeSightingsChart } from "@/components/activities/wildlife-sightings-chart";
-
-type GuideData = {
-	name: string;
-	rating: number;
-	trips: number;
-};
+import { ActivityComments } from "@/components/activities/activity-comments";
 
 type ActivityCount = {
 	name: string;
 	count: number;
 };
-
-type WildlifeSighting = {
-	name: string;
-	value: number;
-};
-
-type ActivityComment = {
-	name: string;
-	sentiment: "POSITIVE" | "NEGATIVE";
-	comment: string;
-};
-
-const WILDLIFE_COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
 export default function ActivitiesPage() {
 	const { currentPeriod, comparablePeriod, onDateRangeChange } =
@@ -75,13 +58,7 @@ export default function ActivitiesPage() {
 	const guideRatingStats = calculateGuideRatingStats(reviewsData);
 	const guideMetrics = calculateGuideMetrics(reviewsData);
 	const wildlifeMetrics = calculateWildlifeSightings(reviewsData);
-
-	const [guideData] = useState<GuideData[]>([
-		{ name: "Amos", rating: 10, trips: 6 },
-		{ name: "KG", rating: 9, trips: 12 },
-		{ name: "Ness", rating: 6, trips: 10 },
-		{ name: "Tony", rating: 7, trips: 7 },
-	]);
+	const comments = calculateActivityComments(reviewsData);
 
 	const [activityCounts] = useState<ActivityCount[]>([
 		{ name: "Game Drive", count: 10 },
@@ -90,28 +67,6 @@ export default function ActivitiesPage() {
 		{ name: "Ranger Experience", count: 2 },
 		{ name: "Boat Trip", count: 1 },
 		{ name: "Village Experience", count: 1 },
-	]);
-
-	const [wildlifeSightings] = useState<WildlifeSighting[]>([
-		{ name: "Lion", value: 25 },
-		{ name: "Elephant", value: 35 },
-		{ name: "Buffalo", value: 25 },
-		{ name: "Leopard", value: 15 },
-	]);
-
-	const [activityComments] = useState<ActivityComment[]>([
-		{
-			name: "Christan Bilney",
-			sentiment: "NEGATIVE",
-			comment:
-				"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-		},
-		{
-			name: "Hady Vanetti",
-			sentiment: "POSITIVE",
-			comment:
-				"Aliquam vel nibh iaculis, ornare purus sit amet, euismod dui. Cras sed tristique neque. Cras ornare dui lorem, vel rhoncus elit venenatis sit amet.",
-		},
 	]);
 
 	const CustomTooltip = ({
@@ -186,39 +141,10 @@ export default function ActivitiesPage() {
 				/>
 
 				{/* Second row */}
-				<Card className='col-span-1 md:col-span-6'>
-					<CardHeader>
-						<CardTitle>Activity Comments</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='space-y-4 h-[350px] overflow-y-auto pr-4'>
-							{activityComments.map((comment, index) => (
-								<div
-									key={index}
-									className='space-y-2 pb-4 border-b last:border-0'
-								>
-									<div className='flex items-center gap-2'>
-										<span
-											className={`px-2 py-1 rounded-md text-xs ${
-												comment.sentiment === "POSITIVE"
-													? "bg-green-100 text-green-800"
-													: "bg-red-100 text-red-800"
-											}`}
-										>
-											{comment.sentiment}
-										</span>
-										<span className='text-sm font-medium'>
-											{comment.name}
-										</span>
-									</div>
-									<p className='text-sm text-gray-600'>
-										{comment.comment}
-									</p>
-								</div>
-							))}
-						</div>
-					</CardContent>
-				</Card>
+				<ActivityComments
+					data={comments}
+					isLoading={reviewsLoading}
+				/>
 
 				{/* Third row */}
 				<Card className='col-span-1 md:col-span-12'>
