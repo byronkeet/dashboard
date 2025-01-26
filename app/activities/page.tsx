@@ -2,21 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
-import { useState, useMemo } from "react";
-import {
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	TooltipProps,
-	PieChart,
-	Pie,
-	Cell,
-	Legend,
-	BarChart,
-	Bar,
-} from "recharts";
+import { useMemo } from "react";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
 import {
@@ -25,16 +11,13 @@ import {
 	calculateGuideMetrics,
 	calculateWildlifeSightings,
 	calculateActivityComments,
+	calculateActivityCounts,
 } from "@/lib/calculations/stats";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { GuidePerformanceChart } from "@/components/activities/guide-performance-chart";
 import { WildlifeSightingsChart } from "@/components/activities/wildlife-sightings-chart";
 import { ActivityComments } from "@/components/activities/activity-comments";
-
-type ActivityCount = {
-	name: string;
-	count: number;
-};
+import { ActivityCountsChart } from "@/components/activities/activity-counts-chart";
 
 export default function ActivitiesPage() {
 	const { currentPeriod, comparablePeriod, onDateRangeChange } =
@@ -59,39 +42,7 @@ export default function ActivitiesPage() {
 	const guideMetrics = calculateGuideMetrics(reviewsData);
 	const wildlifeMetrics = calculateWildlifeSightings(reviewsData);
 	const comments = calculateActivityComments(reviewsData);
-
-	const [activityCounts] = useState<ActivityCount[]>([
-		{ name: "Game Drive", count: 10 },
-		{ name: "Mokoro", count: 9 },
-		{ name: "Guided Walk", count: 6 },
-		{ name: "Ranger Experience", count: 2 },
-		{ name: "Boat Trip", count: 1 },
-		{ name: "Village Experience", count: 1 },
-	]);
-
-	const CustomTooltip = ({
-		active,
-		payload,
-		label,
-	}: TooltipProps<number, string>) => {
-		if (active && payload && payload.length) {
-			return (
-				<div className='bg-white p-4 rounded-lg shadow-lg border border-gray-200'>
-					<p className='text-sm font-medium text-gray-900'>{label}</p>
-					{payload.map((entry) => (
-						<p
-							key={entry.name}
-							className='text-sm'
-							style={{ color: entry.color }}
-						>
-							{entry.name}: {entry.value}
-						</p>
-					))}
-				</div>
-			);
-		}
-		return null;
-	};
+	const activityCounts = calculateActivityCounts(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -147,28 +98,10 @@ export default function ActivitiesPage() {
 				/>
 
 				{/* Third row */}
-				<Card className='col-span-1 md:col-span-12'>
-					<CardHeader>
-						<CardTitle>Activities Count</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<BarChart data={activityCounts}>
-								<CartesianGrid strokeDasharray='3 3' />
-								<XAxis dataKey='name' />
-								<YAxis />
-								<Tooltip />
-								<Bar
-									dataKey='count'
-									fill='#000000'
-								/>
-							</BarChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<ActivityCountsChart
+					data={activityCounts}
+					isLoading={reviewsLoading}
+				/>
 			</div>
 		</div>
 	);

@@ -359,3 +359,50 @@ export function calculateActivityComments(data: {
 				],
 		}));
 }
+
+export interface ActivityMetric {
+	name: string;
+	count: number;
+	previousCount: number;
+}
+
+export function calculateActivityCounts(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): ActivityMetric[] {
+	const calculatePeriodActivities = (reviews: any[]) => {
+		const activities = reviews.reduce((acc, review) => {
+			const activities = (review["What activities did you do?"] || "")
+				.split(",")
+				.map((activity: string) => activity.trim())
+				.filter(Boolean);
+
+			activities.forEach((activity: string) => {
+				acc[activity] = (acc[activity] || 0) + 1;
+			});
+
+			return acc;
+		}, {} as Record<string, number>);
+
+		return Object.entries(activities).map(([name, count]) => ({
+			name,
+			count,
+		}));
+	};
+
+	const currentActivities = calculatePeriodActivities(data.currentPeriod);
+	const previousActivities = calculatePeriodActivities(data.previousPeriod);
+
+	return currentActivities
+		.map((current) => {
+			const previous = previousActivities.find(
+				(p) => p.name === current.name
+			) || { count: 0 };
+			return {
+				name: current.name,
+				count: current.count,
+				previousCount: previous.count,
+			};
+		})
+		.sort((a, b) => b.count - a.count); // Sort by highest count
+}
