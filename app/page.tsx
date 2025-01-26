@@ -109,12 +109,14 @@ export default function Dashboard() {
 					value={guestStats.value}
 					change={guestStats.change}
 					isLoading={isLoading}
+					textSize='text-sm font-medium'
 				/>
 				<StatCard
 					title='Total Submissions'
 					value={submissionStats.value}
 					change={submissionStats.change}
 					isLoading={isLoading}
+					textSize='text-sm font-medium'
 				/>
 				<StatCard
 					title='Average OTS'
@@ -122,6 +124,7 @@ export default function Dashboard() {
 					change={otsStats.change}
 					isLoading={isLoading}
 					tooltip='Overall Trip Score'
+					textSize='text-sm font-medium'
 				/>
 				<StatCard
 					title='Average WRS'
@@ -129,6 +132,7 @@ export default function Dashboard() {
 					change={wrsStats.change}
 					isLoading={isLoading}
 					tooltip='Would Recommend Score'
+					textSize='text-sm font-medium'
 				/>
 			</div>
 

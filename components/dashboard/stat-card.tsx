@@ -13,6 +13,7 @@ interface StatCardProps {
 	change: string;
 	isLoading?: boolean;
 	tooltip?: string;
+	textSize?: string;
 }
 
 export function StatCard({
@@ -21,6 +22,7 @@ export function StatCard({
 	change,
 	isLoading = false,
 	tooltip,
+	textSize = ""
 }: StatCardProps) {
 	const changeValue = parseFloat(change);
 	const changeColor =
@@ -33,7 +35,7 @@ export function StatCard({
 	return (
 		<Card>
 			<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-				<CardTitle className='text-sm font-medium flex items-center gap-2'>
+				<CardTitle className={`${textSize} flex items-center gap-2`}>
 					{title}
 					{tooltip && (
 						<TooltipProvider>
