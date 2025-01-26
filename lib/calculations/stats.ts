@@ -475,3 +475,100 @@ export function calculateFoodRating(data: {
 		change: formatPercentageChange(change),
 	};
 }
+
+export function calculateHousekeepingRating(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): { value: string; change: string } {
+	const calculateAverage = (reviews: any[]) => {
+		if (!reviews?.length) return 0;
+		const total = reviews.reduce((sum, review) => {
+			const score = Number(review["Housekeeping"] || 0);
+			return sum + score;
+		}, 0);
+		return Math.round((total / reviews.length / 5) * 100);
+	};
+
+	const currentValue = calculateAverage(data.currentPeriod);
+	const previousValue = calculateAverage(data.previousPeriod);
+	const change = calculatePercentageChange(previousValue, currentValue);
+
+	return {
+		value: `${currentValue}%`,
+		change: formatPercentageChange(change),
+	};
+}
+
+export function calculateStaffRating(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): { value: string; change: string } {
+	const calculateAverage = (reviews: any[]) => {
+		if (!reviews?.length) return 0;
+		const total = reviews.reduce((sum, review) => {
+			const score = Number(review["Our Staff"] || 0);
+			return sum + score;
+		}, 0);
+		return Math.round((total / reviews.length / 5) * 100);
+	};
+
+	const currentValue = calculateAverage(data.currentPeriod);
+	const previousValue = calculateAverage(data.previousPeriod);
+	const change = calculatePercentageChange(previousValue, currentValue);
+
+	return {
+		value: `${currentValue}%`,
+		change: formatPercentageChange(change),
+	};
+}
+
+export function calculateOverallRating(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): { value: string; change: string } {
+	const calculatePeriodAverage = (reviews: any[]) => {
+		if (!reviews?.length) return 0;
+
+		// Calculate each department's average
+		const roomScore = reviews.reduce(
+			(sum, review) => sum + Number(review["Your Accommodation"] || 0),
+			0
+		);
+		const facilityScore = reviews.reduce(
+			(sum, review) => sum + Number(review["The Camp Facilities"] || 0),
+			0
+		);
+		const foodScore = reviews.reduce(
+			(sum, review) => sum + Number(review["The Food"] || 0),
+			0
+		);
+		const housekeepingScore = reviews.reduce(
+			(sum, review) => sum + Number(review["Housekeeping"] || 0),
+			0
+		);
+		const staffScore = reviews.reduce(
+			(sum, review) => sum + Number(review["Our Staff"] || 0),
+			0
+		);
+
+		// Calculate overall average
+		const totalScore =
+			roomScore +
+			facilityScore +
+			foodScore +
+			housekeepingScore +
+			staffScore;
+		const totalPossibleScore = reviews.length * 5 * 5; // 5 departments * max score of 5
+
+		return Math.round((totalScore / totalPossibleScore) * 100);
+	};
+
+	const currentValue = calculatePeriodAverage(data.currentPeriod);
+	const previousValue = calculatePeriodAverage(data.previousPeriod);
+	const change = calculatePercentageChange(previousValue, currentValue);
+
+	return {
+		value: `${currentValue}%`,
+		change: formatPercentageChange(change),
+	};
+}

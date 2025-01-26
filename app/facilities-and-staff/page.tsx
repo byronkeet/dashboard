@@ -20,6 +20,9 @@ import {
 	calculateRoomRating,
 	calculateFacilityRating,
 	calculateFoodRating,
+	calculateHousekeepingRating,
+	calculateStaffRating,
+	calculateOverallRating,
 } from "@/lib/calculations/stats";
 
 type StaffMention = {
@@ -104,6 +107,9 @@ export default function FacilitiesStaffPage() {
 	const roomRating = calculateRoomRating(reviewsData);
 	const facilityRating = calculateFacilityRating(reviewsData);
 	const foodRating = calculateFoodRating(reviewsData);
+	const housekeepingRating = calculateHousekeepingRating(reviewsData);
+	const staffRating = calculateStaffRating(reviewsData);
+	const overallRating = calculateOverallRating(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -147,35 +153,35 @@ export default function FacilitiesStaffPage() {
 					tooltip='Average rating for food'
 					format='percentage'
 				/>
-			</div>
 
-			<div className='grid gap-4 grid-cols-1 md:grid-cols-3'>
-				<Card>
-					<CardHeader>
-						<CardTitle>Average Housekeeping Rating</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='text-3xl font-bold'>70%</div>
-					</CardContent>
-				</Card>
+				<StatCard
+					title='Average Housekeeping Rating'
+					value={housekeepingRating.value}
+					change={housekeepingRating.change}
+					isLoading={reviewsLoading}
+					tooltip='Average rating for housekeeping'
+					format='percentage'
+				/>
 
-				<Card>
-					<CardHeader>
-						<CardTitle>Average Staff Rating</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='text-3xl font-bold'>76%</div>
-					</CardContent>
-				</Card>
+				<StatCard
+					title='Average Staff Rating'
+					value={staffRating.value}
+					change={staffRating.change}
+					isLoading={reviewsLoading}
+					tooltip='Average rating for staff'
+					format='percentage'
+				/>
 
-				<Card className='bg-gray-900 text-white'>
-					<CardHeader>
-						<CardTitle>Ave Overall Score</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='text-3xl font-bold'>90%</div>
-					</CardContent>
-				</Card>
+				<StatCard
+					title='Ave Overall Score'
+					value={overallRating.value}
+					change={overallRating.change}
+					isLoading={reviewsLoading}
+					tooltip='Average of all department ratings'
+					format='percentage'
+					backgroundColor='bg-gray-900'
+					textColor='text-white'
+				/>
 			</div>
 
 			<Card>
