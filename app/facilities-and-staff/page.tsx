@@ -23,7 +23,9 @@ import {
 	calculateHousekeepingRating,
 	calculateStaffRating,
 	calculateOverallRating,
+	calculateStaffMentions,
 } from "@/lib/calculations/stats";
+import { StaffMentionsChart } from "@/components/facilities/staff-mentions-chart";
 
 type StaffMention = {
 	name: string;
@@ -46,14 +48,6 @@ export default function FacilitiesStaffPage() {
 		previousPeriod: previousPeriodReviews,
 		isLoading: reviewsLoading,
 	} = useReviews(currentPeriod);
-
-	const [staffMentions] = useState<StaffMention[]>([
-		{ name: "Eve", count: 11 },
-		{ name: "Tom", count: 9 },
-		{ name: "Sipho", count: 6 },
-		{ name: "Susan", count: 7 },
-		{ name: "Lucky", count: 6 },
-	]);
 
 	const [facilityComments] = useState<FacilityComment[]>([
 		{
@@ -110,6 +104,7 @@ export default function FacilitiesStaffPage() {
 	const housekeepingRating = calculateHousekeepingRating(reviewsData);
 	const staffRating = calculateStaffRating(reviewsData);
 	const overallRating = calculateOverallRating(reviewsData);
+	const staffMentions = calculateStaffMentions(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -184,28 +179,12 @@ export default function FacilitiesStaffPage() {
 				/>
 			</div>
 
-			<Card>
-				<CardHeader>
-					<CardTitle>Staff Mentions</CardTitle>
-				</CardHeader>
-				<CardContent className='h-[350px]'>
-					<ResponsiveContainer
-						width='100%'
-						height='100%'
-					>
-						<BarChart data={staffMentions}>
-							<CartesianGrid strokeDasharray='3 3' />
-							<XAxis dataKey='name' />
-							<YAxis />
-							<Tooltip content={<CustomTooltip />} />
-							<Bar
-								dataKey='count'
-								fill='#000000'
-							/>
-						</BarChart>
-					</ResponsiveContainer>
-				</CardContent>
-			</Card>
+			<div className='grid gap-4 grid-cols-1'>
+				<StaffMentionsChart
+					data={staffMentions}
+					isLoading={reviewsLoading}
+				/>
+			</div>
 
 			<Card>
 				<CardHeader>

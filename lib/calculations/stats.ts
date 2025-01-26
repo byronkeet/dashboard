@@ -572,3 +572,51 @@ export function calculateOverallRating(data: {
 		change: formatPercentageChange(change),
 	};
 }
+
+export interface StaffMention {
+	name: string;
+	mentions: number;
+	previousMentions: number;
+}
+
+export function calculateStaffMentions(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): StaffMention[] {
+	const calculateMentions = (reviews: any[]) => {
+		const mentionCounts = new Map<string, number>();
+
+		reviews.forEach((review) => {
+			const mentions =
+				review["Did anyone in particular standout?"]?.split(",") || [];
+			mentions.forEach((name) => {
+				const trimmedName = name.trim();
+				if (trimmedName) {
+					mentionCounts.set(
+						trimmedName,
+						(mentionCounts.get(trimmedName) || 0) + 1
+					);
+				}
+			});
+		});
+
+		return mentionCounts;
+	};
+
+	const currentMentions = calculateMentions(data.currentPeriod);
+	const previousMentions = calculateMentions(data.previousPeriod);
+
+	// Combine all unique names
+	const allNames = new Set([
+		...currentMentions.keys(),
+		...previousMentions.keys(),
+	]);
+
+	return Array.from(allNames)
+		.map((name) => ({
+			name,
+			mentions: currentMentions.get(name) || 0,
+			previousMentions: previousMentions.get(name) || 0,
+		}))
+		.sort((a, b) => b.mentions - a.mentions);
+}
