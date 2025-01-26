@@ -19,7 +19,10 @@ import {
 } from "recharts";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
-import { calculateWESStats } from "@/lib/calculations/stats";
+import {
+	calculateWESStats,
+	calculateGuideRatingStats,
+} from "@/lib/calculations/stats";
 import { StatCard } from "@/components/dashboard/stat-card";
 
 type GuideData = {
@@ -65,6 +68,7 @@ export default function ActivitiesPage() {
 	);
 
 	const wesStats = calculateWESStats(reviewsData);
+	const guideRatingStats = calculateGuideRatingStats(reviewsData);
 
 	const [guideData] = useState<GuideData[]>([
 		{ name: "Amos", rating: 10, trips: 6 },
@@ -152,19 +156,17 @@ export default function ActivitiesPage() {
 						change={wesStats.change}
 						isLoading={reviewsLoading}
 						tooltip='Average Wildlife Experience Score'
+						backgroundColor='bg-gray-900'
+						textColor='text-white'
 					/>
 
-					<Card>
-						<CardHeader>
-							<CardTitle>Average Guide Rating</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-3xl font-bold'>90%</div>
-							<p className='text-xs text-muted-foreground'>
-								Collective score of guides
-							</p>
-						</CardContent>
-					</Card>
+					<StatCard
+						title='Ave Guide Rating'
+						value={guideRatingStats.value}
+						change={guideRatingStats.change}
+						isLoading={reviewsLoading}
+						tooltip='Average Guide Rating Score'
+					/>
 				</div>
 
 				<Card className='col-span-1 md:col-span-8'>
