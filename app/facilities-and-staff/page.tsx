@@ -16,7 +16,10 @@ import {
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { calculateRoomRating } from "@/lib/calculations/stats";
+import {
+	calculateRoomRating,
+	calculateFacilityRating,
+} from "@/lib/calculations/stats";
 
 type StaffMention = {
 	name: string;
@@ -98,6 +101,7 @@ export default function FacilitiesStaffPage() {
 	);
 
 	const roomRating = calculateRoomRating(reviewsData);
+	const facilityRating = calculateFacilityRating(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -124,14 +128,14 @@ export default function FacilitiesStaffPage() {
 					format='percentage'
 				/>
 
-				<Card>
-					<CardHeader>
-						<CardTitle>Average Facility Rating</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className='text-3xl font-bold'>90%</div>
-					</CardContent>
-				</Card>
+				<StatCard
+					title='Average Facility Rating'
+					value={facilityRating.value}
+					change={facilityRating.change}
+					isLoading={reviewsLoading}
+					tooltip='Average rating for camp facilities'
+					format='percentage'
+				/>
 
 				<Card>
 					<CardHeader>

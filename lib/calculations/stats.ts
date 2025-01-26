@@ -429,3 +429,26 @@ export function calculateRoomRating(data: {
 		change: formatPercentageChange(change),
 	};
 }
+
+export function calculateFacilityRating(data: {
+	currentPeriod: any[];
+	previousPeriod: any[];
+}): { value: string; change: string } {
+	const calculateAverage = (reviews: any[]) => {
+		if (!reviews?.length) return 0;
+		const total = reviews.reduce((sum, review) => {
+			const score = Number(review["The Camp Facilities"] || 0);
+			return sum + score;
+		}, 0);
+		return Math.round((total / reviews.length / 5) * 100);
+	};
+
+	const currentValue = calculateAverage(data.currentPeriod);
+	const previousValue = calculateAverage(data.previousPeriod);
+	const change = calculatePercentageChange(previousValue, currentValue);
+
+	return {
+		value: `${currentValue}%`,
+		change: formatPercentageChange(change),
+	};
+}
