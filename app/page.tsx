@@ -3,23 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
 import { useState, useEffect, useMemo } from "react";
-import {
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	TooltipProps,
-	PieChart,
-	Pie,
-	Cell,
-	Legend,
-	LineChart,
-	Line,
-} from "recharts";
-import { Review, PaginatedResponse } from "@/lib/types";
-import { getReviews } from "@/lib/reviews";
-import { cn } from "@/lib/utils";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useStatsData } from "@/lib/hooks/useStatsData";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -29,8 +12,6 @@ import { useSentimentRatio } from "@/lib/hooks/useSentimentRatio";
 import { SentimentRatioChart } from "@/components/dashboard/sentiment-ratio-chart";
 import { useReviews } from "@/lib/hooks/useReviews";
 import { RecentReviewsTable } from "@/components/dashboard/recent-reviews-table";
-
-const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
 export default function Dashboard() {
 	const { currentPeriod, comparablePeriod } = useDateRange();
