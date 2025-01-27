@@ -12,7 +12,6 @@ import {
 	Geography,
 	Marker,
 } from "react-simple-maps";
-import { countryCoordinates } from "./countryCoordinates";
 import {
 	LineChart,
 	Line,
@@ -34,10 +33,12 @@ import {
 	calculateMarketingSources,
 	calculateCommunicationRatings,
 	calculateTopTravelAgents,
+	calculateGuestNationalities,
 } from "@/lib/calculations/stats";
 import { MarketingSourceChart } from "@/components/communication/marketing-source-chart";
 import { CommunicationRatingsChart } from "@/components/communication/communication-ratings-chart";
 import { TravelAgentsChart } from "@/components/communication/travel-agents-chart";
+import { GuestNationalityChart } from "@/components/communication/guest-nationality-chart";
 
 // Constants for the social media cards
 const socialMediaData = {
@@ -136,31 +137,6 @@ export default function CommunicationPage() {
 
 	// Load dummy data for now
 	useEffect(() => {
-		// Simulated nationality data
-		const dummyNationalities: GuestNationality[] = [
-			{
-				country: "South Africa",
-				count: 15,
-				coordinates: countryCoordinates["South Africa"],
-			},
-			{
-				country: "United States",
-				count: 8,
-				coordinates: countryCoordinates["United States"],
-			},
-			{
-				country: "United Kingdom",
-				count: 6,
-				coordinates: countryCoordinates["United Kingdom"],
-			},
-			{
-				country: "Germany",
-				count: 4,
-				coordinates: countryCoordinates["Germany"],
-			},
-		];
-		setGuestNationalities(dummyNationalities);
-
 		// Simulated comments
 		const dummyComments: GuestComment[] = [
 			{
@@ -223,6 +199,7 @@ export default function CommunicationPage() {
 	const marketingSourceData = calculateMarketingSources(reviewsData);
 	const communicationRatingsData = calculateCommunicationRatings(reviewsData);
 	const travelAgentsData = calculateTopTravelAgents(reviewsData);
+	const guestNationalityData = calculateGuestNationalities(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -372,108 +349,10 @@ export default function CommunicationPage() {
 			</div>
 
 			{/* World Map */}
-			<Card>
-				<CardHeader className='pb-0'>
-					<CardTitle>Guest Nationality</CardTitle>
-				</CardHeader>
-				<CardContent className='p-0'>
-					<div className='w-full aspect-[2/1] relative'>
-						<ComposableMap
-							projectionConfig={{
-								scale: 130,
-								center: [0, 0],
-							}}
-							width={980}
-							height={450}
-							style={{
-								width: "100%",
-								height: "100%",
-								margin: "-20px",
-							}}
-						>
-							<Geographies geography={geoUrl}>
-								{({ geographies }) =>
-									geographies.map((geo) => (
-										<Geography
-											key={geo.rsmKey}
-											geography={geo}
-											fill='#EAEAEC'
-											stroke='#D6D6DA'
-											strokeWidth={0.5}
-										/>
-									))
-								}
-							</Geographies>
-							{guestNationalities.map(
-								({ country, coordinates, count }) => (
-									<Marker
-										key={country}
-										coordinates={coordinates}
-										onMouseEnter={(evt) => {
-											setTooltipContent({
-												content: `${country}: ${count} guests`,
-												position: {
-													x: evt.clientX,
-													y: evt.clientY,
-												},
-											});
-										}}
-										onMouseLeave={() =>
-											setTooltipContent(null)
-										}
-									>
-										<circle
-											r={Math.sqrt(count) * 3}
-											fill='#3182CE'
-											stroke='#FFFFFF'
-											strokeWidth={1}
-											style={{
-												cursor: "pointer",
-												transition: "all 0.2s ease",
-											}}
-											onMouseEnter={(e) => {
-												e.currentTarget.style.fill =
-													"#2C5282";
-												e.currentTarget.style.r = (
-													Math.sqrt(count) * 3.5
-												).toString();
-											}}
-											onMouseLeave={(e) => {
-												e.currentTarget.style.fill =
-													"#3182CE";
-												e.currentTarget.style.r = (
-													Math.sqrt(count) * 3
-												).toString();
-											}}
-										/>
-									</Marker>
-								)
-							)}
-						</ComposableMap>
-						{tooltipContent && (
-							<div
-								style={{
-									position: "fixed",
-									left: tooltipContent.position.x + 10,
-									top: tooltipContent.position.y - 40,
-									transform: "translateX(-50%)",
-									backgroundColor: "white",
-									padding: "8px 12px",
-									borderRadius: "4px",
-									boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-									border: "1px solid #e2e8f0",
-									zIndex: 1000,
-									pointerEvents: "none",
-								}}
-							>
-								<p className='text-sm font-medium'>
-									{tooltipContent.content}
-								</p>
-							</div>
-						)}
-					</div>
-				</CardContent>
-			</Card>
+			<GuestNationalityChart
+				data={guestNationalityData}
+				isLoading={reviewsLoading}
+			/>
 
 			{/* Guest Comments */}
 			<Card>
