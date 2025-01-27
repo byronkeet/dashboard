@@ -7,6 +7,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LucideIcon, UsersRound, Eye, Compass, ThumbsUp } from "lucide-react";
 
 interface StatCardProps {
 	title: string;
@@ -18,8 +19,17 @@ interface StatCardProps {
 	backgroundColor?: string;
 	textColor?: string;
 	content?: string;
-	icon?: keyof typeof LucideIcons;
+	icon?: keyof typeof icons;
+	format?: "percentage" | "number";
 }
+
+const icons = {
+	UsersRound,
+	Eye,
+	Compass,
+	ThumbsUp,
+	// Add other icons you use
+} as const;
 
 export function StatCard({
 	title,
@@ -41,8 +51,7 @@ export function StatCard({
 			? "text-red-600"
 			: "text-gray-600";
 
-	// Dynamically get the icon component
-	const IconComponent = icon ? LucideIcons[icon] : null;
+	const Icon = icon ? icons[icon] : undefined;
 
 	return (
 		<Card className={`${backgroundColor} ${textColor}`}>
@@ -62,9 +71,7 @@ export function StatCard({
 						</TooltipProvider>
 					)}
 				</CardTitle>
-				{IconComponent && (
-					<IconComponent className='h-6 w-6 text-gray-500' />
-				)}
+				{Icon && <Icon className='h-6 w-6 text-gray-500' />}
 			</CardHeader>
 			<CardContent>
 				{isLoading ? (

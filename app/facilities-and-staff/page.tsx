@@ -1,18 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
 import { useMemo } from "react";
-import {
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	TooltipProps,
-	BarChart,
-	Bar,
-} from "recharts";
+import { TooltipProps } from "recharts";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -42,8 +32,7 @@ type FacilityComment = {
 };
 
 export default function FacilitiesStaffPage() {
-	const { currentPeriod, comparablePeriod, onDateRangeChange } =
-		useDateRange();
+	const { currentPeriod, comparablePeriod } = useDateRange();
 
 	const {
 		currentPeriod: currentPeriodReviews,
@@ -99,11 +88,7 @@ export default function FacilitiesStaffPage() {
 					Facilities & Staff
 				</h2>
 				<div className='flex items-center space-x-2'>
-					<DualDateRangePicker
-						currentPeriod={currentPeriod}
-						comparablePeriod={comparablePeriod}
-						onUpdate={onDateRangeChange}
-					/>
+					<DualDateRangePicker />
 				</div>
 			</div>
 
