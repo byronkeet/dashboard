@@ -34,11 +34,13 @@ import {
 	calculateCommunicationRatings,
 	calculateTopTravelAgents,
 	calculateGuestNationalities,
+	calculateGuestComments,
 } from "@/lib/calculations/stats";
 import { MarketingSourceChart } from "@/components/communication/marketing-source-chart";
 import { CommunicationRatingsChart } from "@/components/communication/communication-ratings-chart";
 import { TravelAgentsChart } from "@/components/communication/travel-agents-chart";
 import { GuestNationalityChart } from "@/components/communication/guest-nationality-chart";
+import { GuestComments } from "@/components/communication/guest-comments";
 
 // Constants for the social media cards
 const socialMediaData = {
@@ -135,25 +137,10 @@ export default function CommunicationPage() {
 		{ name: "Thompsons", bookings: 12 },
 	]);
 
-	// Load dummy data for now
-	useEffect(() => {
-		// Simulated comments
-		const dummyComments: GuestComment[] = [
-			{
-				name: "John Smith",
-				sentiment: "POSITIVE",
-				comment:
-					"Excellent communication throughout our stay. Staff was very responsive.",
-			},
-			{
-				name: "Maria Garcia",
-				sentiment: "NEGATIVE",
-				comment:
-					"Had some issues with the Wi-Fi connectivity during our stay.",
-			},
-		];
-		setGuestComments(dummyComments);
-	}, []);
+	const guestCommentsData = useMemo(
+		() => calculateGuestComments(reviewsData),
+		[reviewsData]
+	);
 
 	const CustomTooltip = ({
 		active,
@@ -355,39 +342,10 @@ export default function CommunicationPage() {
 			/>
 
 			{/* Guest Comments */}
-			<Card>
-				<CardHeader>
-					<CardTitle>Guest Comments</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div className='space-y-4'>
-						{guestComments.map((comment, index) => (
-							<div
-								key={index}
-								className='space-y-2 pb-4 border-b last:border-0'
-							>
-								<div className='flex items-center gap-2'>
-									<span
-										className={`px-2 py-1 rounded-md text-xs ${
-											comment.sentiment === "POSITIVE"
-												? "bg-green-100 text-green-800"
-												: "bg-red-100 text-red-800"
-										}`}
-									>
-										{comment.sentiment}
-									</span>
-									<span className='text-sm font-medium'>
-										{comment.name}
-									</span>
-								</div>
-								<p className='text-sm text-gray-600'>
-									{comment.comment}
-								</p>
-							</div>
-						))}
-					</div>
-				</CardContent>
-			</Card>
+			<GuestComments
+				data={guestCommentsData}
+				isLoading={reviewsLoading}
+			/>
 		</div>
 	);
 }

@@ -972,3 +972,28 @@ export function calculateGuestNationalities(
 		}))
 		.sort((a, b) => b.count - a.count);
 }
+
+export type GuestComment = {
+	name: string;
+	sentiment: "POSITIVE" | "NEGATIVE";
+	comment: string;
+	date: string;
+};
+
+export function calculateGuestComments(data: ReviewData): GuestComment[] {
+	if (!data?.currentPeriod) {
+		return [];
+	}
+
+	return data.currentPeriod
+		.filter((review) => review["Any Further Comments or Recommendations?"])
+		.map((review) => ({
+			name: review["Full Name"] || "Anonymous",
+			sentiment: review["Overall Comment Sentiment"] || "POSITIVE",
+			comment: review["Any Further Comments or Recommendations?"],
+			date: review["Submitted On (UTC)"],
+		}))
+		.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+		);
+}
