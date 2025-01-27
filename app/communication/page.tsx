@@ -30,6 +30,8 @@ import {
 	Bar,
 } from "recharts";
 import Papa from "papaparse";
+import { calculateMarketingSources } from "@/lib/calculations/marketing-stats";
+import { MarketingSourceChart } from "@/components/communication/marketing-source-chart";
 
 // Constants for the social media cards
 const socialMediaData = {
@@ -212,6 +214,8 @@ export default function CommunicationPage() {
 		}
 	};
 
+	const marketingSourceData = calculateMarketingSources(reviewsData);
+
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
 			<div className='flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0'>
@@ -341,43 +345,10 @@ export default function CommunicationPage() {
 			{/* Charts Row */}
 			<div className='grid gap-4 grid-cols-1 md:grid-cols-3'>
 				{/* Marketing Source */}
-				<Card>
-					<CardHeader>
-						<CardTitle>Marketing Source</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[300px] md:h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<PieChart>
-								<Pie
-									data={marketingData}
-									cx='50%'
-									cy='50%'
-									innerRadius={60}
-									outerRadius={80}
-									fill='#8884d8'
-									paddingAngle={5}
-									dataKey='value'
-								>
-									{marketingData.map((entry, index) => (
-										<Cell
-											key={`cell-${index}`}
-											fill={
-												CHART_COLORS[
-													index % CHART_COLORS.length
-												]
-											}
-										/>
-									))}
-								</Pie>
-								<Tooltip />
-								<Legend />
-							</PieChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<MarketingSourceChart
+					data={marketingSourceData}
+					isLoading={reviewsLoading}
+				/>
 
 				{/* Communication Ratings */}
 				<Card>
