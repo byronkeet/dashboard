@@ -112,6 +112,7 @@ export default function Dashboard() {
 					textSize='text-sm font-medium'
 					backgroundColor='bg-gray-900'
 					textColor='text-white'
+					icon='UsersRound'
 				/>
 				<StatCard
 					title='Total Submissions'
@@ -119,6 +120,7 @@ export default function Dashboard() {
 					change={submissionStats.change}
 					isLoading={isLoading}
 					textSize='text-sm font-medium'
+					icon='Eye'
 				/>
 				<StatCard
 					title='Average OTS'
@@ -127,6 +129,7 @@ export default function Dashboard() {
 					isLoading={isLoading}
 					tooltip='Overall Trip Score'
 					textSize='text-sm font-medium'
+					icon='Compass'
 				/>
 				<StatCard
 					title='Average WRS'
@@ -135,6 +138,7 @@ export default function Dashboard() {
 					isLoading={isLoading}
 					tooltip='Would Recommend Score'
 					textSize='text-sm font-medium'
+					icon='ThumbsUp'
 				/>
 			</div>
 

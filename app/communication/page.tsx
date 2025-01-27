@@ -41,6 +41,7 @@ import { CommunicationRatingsChart } from "@/components/communication/communicat
 import { TravelAgentsChart } from "@/components/communication/travel-agents-chart";
 import { GuestNationalityChart } from "@/components/communication/guest-nationality-chart";
 import { GuestComments } from "@/components/communication/guest-comments";
+import { StatCard } from "@/components/dashboard/stat-card";
 
 // Constants for the social media cards
 const socialMediaData = {
@@ -210,107 +211,47 @@ export default function CommunicationPage() {
 				)}`}
 			>
 				{socialSettings.facebook && (
-					<Card>
-						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-							<CardTitle className='text-sm font-medium'>
-								Facebook Followers
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-2xl font-bold'>
-								{socialMediaData.facebook.count}
-							</div>
-							<div
-								className={`text-xs ${
-									socialMediaData.facebook.change >= 0
-										? "text-green-500"
-										: "text-red-500"
-								}`}
-							>
-								{socialMediaData.facebook.change >= 0
-									? "+"
-									: ""}
-								{socialMediaData.facebook.change}%
-							</div>
-						</CardContent>
-					</Card>
+					<StatCard
+						title='Facebook Followers'
+						value={socialMediaData.facebook.count.toString()}
+						change={`${
+							socialMediaData.facebook.change >= 0 ? "+" : ""
+						}${socialMediaData.facebook.change}%`}
+						icon='Facebook'
+					/>
 				)}
 
 				{socialSettings.instagram && (
-					<Card>
-						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-							<CardTitle className='text-sm font-medium'>
-								Instagram Followers
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-2xl font-bold'>
-								{socialMediaData.instagram.count}
-							</div>
-							<div
-								className={`text-xs ${
-									socialMediaData.instagram.change >= 0
-										? "text-green-500"
-										: "text-red-500"
-								}`}
-							>
-								{socialMediaData.instagram.change >= 0
-									? "+"
-									: ""}
-								{socialMediaData.instagram.change}%
-							</div>
-						</CardContent>
-					</Card>
+					<StatCard
+						title='Instagram Followers'
+						value={socialMediaData.instagram.count.toString()}
+						change={`${
+							socialMediaData.instagram.change >= 0 ? "+" : ""
+						}${socialMediaData.instagram.change}%`}
+						icon='Instagram'
+					/>
 				)}
 
 				{socialSettings.twitter && (
-					<Card>
-						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-							<CardTitle className='text-sm font-medium'>
-								X Followers
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-2xl font-bold'>
-								{socialMediaData.twitter.count}
-							</div>
-							<div
-								className={`text-xs ${
-									socialMediaData.twitter.change >= 0
-										? "text-green-500"
-										: "text-red-500"
-								}`}
-							>
-								{socialMediaData.twitter.change >= 0 ? "+" : ""}
-								{socialMediaData.twitter.change}%
-							</div>
-						</CardContent>
-					</Card>
+					<StatCard
+						title='Twitter Followers'
+						value={socialMediaData.twitter.count.toString()}
+						change={`${
+							socialMediaData.twitter.change >= 0 ? "+" : ""
+						}${socialMediaData.twitter.change}%`}
+						icon='Twitter'
+					/>
 				)}
 
 				{socialSettings.tiktok && (
-					<Card>
-						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-							<CardTitle className='text-sm font-medium'>
-								TikTok Followers
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='text-2xl font-bold'>
-								{socialMediaData.tiktok.count}
-							</div>
-							<div
-								className={`text-xs ${
-									socialMediaData.tiktok.change >= 0
-										? "text-green-500"
-										: "text-red-500"
-								}`}
-							>
-								{socialMediaData.tiktok.change >= 0 ? "+" : ""}
-								{socialMediaData.tiktok.change}%
-							</div>
-						</CardContent>
-					</Card>
+					<StatCard
+						title='TikTok Followers'
+						value={socialMediaData.tiktok.count.toString()}
+						change={`${
+							socialMediaData.tiktok.change >= 0 ? "+" : ""
+						}${socialMediaData.tiktok.change}%`}
+						icon='Music2'
+					/>
 				)}
 			</div>
 

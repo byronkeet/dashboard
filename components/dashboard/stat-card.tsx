@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InfoIcon } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -17,6 +18,7 @@ interface StatCardProps {
 	backgroundColor?: string;
 	textColor?: string;
 	content?: string;
+	icon?: keyof typeof LucideIcons;
 }
 
 export function StatCard({
@@ -29,6 +31,7 @@ export function StatCard({
 	backgroundColor = "",
 	textColor = "",
 	content = "",
+	icon,
 }: StatCardProps) {
 	const changeValue = parseFloat(change);
 	const changeColor =
@@ -37,6 +40,9 @@ export function StatCard({
 			: changeValue < 0
 			? "text-red-600"
 			: "text-gray-600";
+
+	// Dynamically get the icon component
+	const IconComponent = icon ? LucideIcons[icon] : null;
 
 	return (
 		<Card className={`${backgroundColor} ${textColor}`}>
@@ -56,6 +62,9 @@ export function StatCard({
 						</TooltipProvider>
 					)}
 				</CardTitle>
+				{IconComponent && (
+					<IconComponent className='h-6 w-6 text-gray-500' />
+				)}
 			</CardHeader>
 			<CardContent>
 				{isLoading ? (
