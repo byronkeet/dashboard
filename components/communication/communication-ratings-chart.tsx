@@ -8,7 +8,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import { CommunicationRating } from "@/lib/calculations/communication-stats";
+import { CommunicationRating } from "@/lib/calculations/stats";
 
 interface CommunicationRatingsChartProps {
 	data: CommunicationRating[];

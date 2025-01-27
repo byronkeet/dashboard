@@ -7,7 +7,7 @@ import {
 	Legend,
 	Tooltip,
 } from "recharts";
-import { MarketingSource } from "@/lib/calculations/marketing-stats";
+import { MarketingSource } from "@/lib/calculations/stats";
 import {
 	calculatePercentageChange,
 	formatPercentageChange,

@@ -30,10 +30,12 @@ import {
 	Bar,
 } from "recharts";
 import Papa from "papaparse";
-import { calculateMarketingSources } from "@/lib/calculations/marketing-stats";
+import {
+	calculateMarketingSources,
+	calculateCommunicationRatings,
+} from "@/lib/calculations/stats";
 import { MarketingSourceChart } from "@/components/communication/marketing-source-chart";
 import { CommunicationRatingsChart } from "@/components/communication/communication-ratings-chart";
-import { calculateCommunicationRatings } from "@/lib/calculations/communication-stats";
 
 // Constants for the social media cards
 const socialMediaData = {
