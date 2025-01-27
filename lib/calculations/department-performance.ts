@@ -10,7 +10,7 @@ export function calculateDepartmentPerformance(data: {
 	currentPeriod: Review[];
 	previousPeriod: Review[];
 }): DepartmentMetric[] {
-	const calculateAverage = (reviews: Review[], field: string) => {
+	const calculateAverage = (reviews: Review[], field: keyof Review) => {
 		if (!reviews.length) return 0;
 		const sum = reviews.reduce(
 			(acc, review) => acc + Number(review[field] || 0),
