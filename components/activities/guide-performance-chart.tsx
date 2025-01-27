@@ -87,7 +87,11 @@ export function GuidePerformanceChart({
 											</p>
 											<p className='text-sm'>
 												Rating:{" "}
-												{payload[0].value.toFixed(1)}/5{" "}
+												{payload && payload[0]?.value
+													? `${Number(
+															payload[0].value
+													  ).toFixed(1)}/5`
+													: "N/A"}{" "}
 												<span
 													className={
 														ratingChange > 0
