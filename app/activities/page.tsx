@@ -27,7 +27,7 @@ export default function ActivitiesPage() {
 		currentPeriod: currentPeriodReviews,
 		previousPeriod: previousPeriodReviews,
 		isLoading: reviewsLoading,
-	} = useReviews(currentPeriod);
+	} = useReviews(currentPeriod, comparablePeriod);
 
 	const reviewsData = useMemo(
 		() => ({

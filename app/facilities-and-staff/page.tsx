@@ -49,7 +49,7 @@ export default function FacilitiesStaffPage() {
 		currentPeriod: currentPeriodReviews,
 		previousPeriod: previousPeriodReviews,
 		isLoading: reviewsLoading,
-	} = useReviews(currentPeriod);
+	} = useReviews(currentPeriod, comparablePeriod);
 
 	const CustomTooltip = ({
 		active,

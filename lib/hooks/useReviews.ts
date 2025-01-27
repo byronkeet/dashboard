@@ -11,10 +11,16 @@ interface UseReviewsResult {
 	setCurrentPage: (page: number) => void;
 }
 
-export function useReviews(dateRange: {
-	from: Date;
-	to: Date;
-}): UseReviewsResult {
+export function useReviews(
+	currentDateRange: {
+		from: Date;
+		to: Date;
+	},
+	comparableDateRange?: {
+		from: Date;
+		to: Date;
+	}
+): UseReviewsResult {
 	const [reviews, setReviews] = useState<any[]>([]);
 	const [currentPeriodData, setCurrentPeriodData] = useState<any[]>([]);
 	const [previousPeriodData, setPreviousPeriodData] = useState<any[]>([]);
@@ -27,19 +33,28 @@ export function useReviews(dateRange: {
 		try {
 			setIsLoading(true);
 			const params = new URLSearchParams({
-				from: dateRange.from.toISOString(),
-				to: dateRange.to.toISOString(),
+				from: currentDateRange.from.toISOString(),
+				to: currentDateRange.to.toISOString(),
 				page: currentPage.toString(),
 			});
 
-			console.log("Fetching reviews with params:", params.toString());
+			if (comparableDateRange) {
+				params.append(
+					"compareFrom",
+					comparableDateRange.from.toISOString()
+				);
+				params.append(
+					"compareTo",
+					comparableDateRange.to.toISOString()
+				);
+			}
+
 			const response = await fetch(`/api/reviews/paginated?${params}`);
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
 			const data = await response.json();
-			console.log("API Response:", data);
 
 			if (!data.success) {
 				throw new Error(data.message || "Failed to fetch reviews");
@@ -59,7 +74,13 @@ export function useReviews(dateRange: {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [dateRange.from.toISOString(), dateRange.to.toISOString(), currentPage]);
+	}, [
+		currentDateRange.from.toISOString(),
+		currentDateRange.to.toISOString(),
+		comparableDateRange?.from.toISOString(),
+		comparableDateRange?.to.toISOString(),
+		currentPage,
+	]);
 
 	useEffect(() => {
 		fetchReviews();
