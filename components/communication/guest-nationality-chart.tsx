@@ -103,15 +103,17 @@ export function GuestNationalityChart({
 									}}
 									onMouseEnter={(e) => {
 										e.currentTarget.style.fill = "#2C5282";
-										e.currentTarget.style.r = (
-											Math.sqrt(count) * 3.5
-										).toString();
+										e.currentTarget.setAttribute(
+											"r",
+											(Math.sqrt(count) * 3.5).toString()
+										);
 									}}
 									onMouseLeave={(e) => {
 										e.currentTarget.style.fill = "#3182CE";
-										e.currentTarget.style.r = (
-											Math.sqrt(count) * 3
-										).toString();
+										e.currentTarget.setAttribute(
+											"r",
+											(Math.sqrt(count) * 3).toString()
+										);
 									}}
 								/>
 							</Marker>
