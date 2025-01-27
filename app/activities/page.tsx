@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
 import { useMemo } from "react";
 import { useDateRange } from "@/lib/context/date-range-context";
@@ -20,7 +19,7 @@ import { ActivityComments } from "@/components/activities/activity-comments";
 import { ActivityCountsChart } from "@/components/activities/activity-counts-chart";
 
 export default function ActivitiesPage() {
-	const { currentPeriod, comparablePeriod, onDateRangeChange } =
+	const { currentPeriod, comparablePeriod } =
 		useDateRange();
 
 	const {
@@ -51,11 +50,7 @@ export default function ActivitiesPage() {
 					Activity Dashboard
 				</h2>
 				<div className='flex items-center space-x-2'>
-					<DualDateRangePicker
-						currentPeriod={currentPeriod}
-						comparablePeriod={comparablePeriod}
-						onUpdate={onDateRangeChange}
-					/>
+					<DualDateRangePicker />
 				</div>
 			</div>
 
