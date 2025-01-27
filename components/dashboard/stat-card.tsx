@@ -1,13 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InfoIcon } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { LucideIcon, UsersRound, Eye, Compass, ThumbsUp } from "lucide-react";
+import {
+	UsersRound,
+	Eye,
+	Compass,
+	ThumbsUp,
+	Facebook,
+	Instagram,
+	Twitter,
+	Music2,
+} from "lucide-react";
 
 interface StatCardProps {
 	title: string;
@@ -28,6 +36,10 @@ const icons = {
 	Eye,
 	Compass,
 	ThumbsUp,
+	Facebook,
+	Instagram,
+	Twitter,
+	Music2,
 	// Add other icons you use
 } as const;
 
