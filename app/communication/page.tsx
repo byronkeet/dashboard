@@ -195,10 +195,22 @@ export default function CommunicationPage() {
 		return null;
 	};
 
-	// Get enabled social media platforms
-	const enabledSocialMedia = Object.entries(socialSettings)
-		.filter(([_, enabled]) => enabled)
-		.map(([platform]) => platform);
+	// First calculate the number of enabled social media platforms
+	const enabledCount = Object.values(socialSettings).filter(Boolean).length;
+
+	// Helper function to determine grid columns
+	const getGridCols = (count: number) => {
+		switch (count) {
+			case 1:
+				return "md:grid-cols-1";
+			case 2:
+				return "md:grid-cols-2";
+			case 3:
+				return "md:grid-cols-3";
+			default:
+				return "md:grid-cols-4";
+		}
+	};
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -217,9 +229,9 @@ export default function CommunicationPage() {
 
 			{/* Social Media Stats */}
 			<div
-				className={`grid gap-4 grid-cols-1 md:grid-cols-${
-					enabledSocialMedia.length || 1
-				}`}
+				className={`grid gap-4 grid-cols-1 ${getGridCols(
+					enabledCount
+				)}`}
 			>
 				{socialSettings.facebook && (
 					<Card>
