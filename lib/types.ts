@@ -37,6 +37,18 @@ export interface PaginatedResponse<T> {
 }
 
 // Add comparison types for stats
+export interface StatsComparisonData {
+	current: Stats;
+	previous?: Stats;
+	percentageChange?: {
+		totalGuests: number;
+		totalSubmissions: number;
+		averageOTS: number;
+		averageWRS: number;
+	};
+}
+
+// Update the generic ComparisonData type
 export interface ComparisonData<T> {
 	current: T;
 	previous?: T;
