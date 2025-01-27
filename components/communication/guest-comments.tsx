@@ -54,12 +54,12 @@
 								<div className='flex items-center gap-2'>
 									<span
 										className={`px-2 py-1 rounded-md text-xs ${
-											comment.sentiment === "POSITIVE"
+											comment.sentiment.toUpperCase() === "POSITIVE"
 												? "bg-green-100 text-green-800"
 												: "bg-red-100 text-red-800"
 										}`}
 									>
-										{comment.sentiment}
+										{comment.sentiment.toUpperCase()}
 									</span>
 									<span className='text-sm font-medium'>
 										{comment.name}
