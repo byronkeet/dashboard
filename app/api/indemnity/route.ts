@@ -65,7 +65,7 @@ export async function GET(request: Request) {
 
 		console.log("Airtable formula:", formula);
 
-		const records = await base(AIRTABLE_INDEMNITY_TABLE_NAME)
+		const records = await base(AIRTABLE_INDEMNITY_TABLE_NAME as string)
 			.select({
 				filterByFormula: formula,
 				sort: [{ field: "Submitted On (UTC)", direction: "desc" }],
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
 			currentPeriod: records
 				.filter((record) => {
 					const submittedDate = new Date(
-						record.fields["Submitted On (UTC)"]
+						record.fields["Submitted On (UTC)"] as string
 					);
 					return (
 						submittedDate >= currentPeriodStart &&
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
 			previousPeriod: records
 				.filter((record) => {
 					const submittedDate = new Date(
-						record.fields["Submitted On (UTC)"]
+						record.fields["Submitted On (UTC)"] as string
 					);
 					return (
 						submittedDate >= previousPeriodStart &&

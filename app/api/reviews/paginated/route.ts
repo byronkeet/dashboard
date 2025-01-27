@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 
 		console.log("Airtable formula:", formula);
 
-		const records = await base(AIRTABLE_REVIEW_TABLE_NAME)
+		const records = await base(AIRTABLE_REVIEW_TABLE_NAME as string)
 			.select({
 				filterByFormula: formula,
 				sort: [{ field: "Submitted On (UTC)", direction: "desc" }],
@@ -55,7 +55,9 @@ export async function GET(request: Request) {
 		// Split records into current and previous periods
 		const currentPeriodRecords = records
 			.filter((record) => {
-				const date = new Date(record.fields["Submitted On (UTC)"]);
+				const date = new Date(
+					record.fields["Submitted On (UTC)"] as string
+				);
 				return date >= start && date <= end;
 			})
 			.map((record) => ({
@@ -65,7 +67,9 @@ export async function GET(request: Request) {
 
 		const previousPeriodRecords = records
 			.filter((record) => {
-				const date = new Date(record.fields["Submitted On (UTC)"]);
+				const date = new Date(
+					record.fields["Submitted On (UTC)"] as string
+				);
 				return date >= previousStart && date < start;
 			})
 			.map((record) => ({
