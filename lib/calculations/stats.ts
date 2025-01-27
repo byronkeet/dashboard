@@ -1,3 +1,10 @@
+import { Review } from "@/lib/types";
+
+interface ReviewData {
+	currentPeriod: Review[];
+	previousPeriod: Review[];
+}
+
 // Helper functions for stat calculations
 export function calculatePercentageChange(
 	previous: number,
@@ -235,23 +242,29 @@ export function calculateGuideMetrics(data: {
 
 	// Helper function to calculate metrics for a period
 	const calculatePeriodMetrics = (reviews: any[]) => {
-		const guideStats = reviews.reduce((acc, review) => {
-			const guideName = review["Your Guide"];
-			const rating = Number(review["Rate Your Guide"]) || 0;
+		const guideStats = reviews.reduce(
+			(
+				acc: { [key: string]: { totalRating: number; count: number } },
+				review
+			) => {
+				const guideName = review["Your Guide"];
+				const rating = Number(review["Rate Your Guide"]) || 0;
 
-			if (!guideName) return acc;
+				if (!guideName) return acc;
 
-			if (!acc[guideName]) {
-				acc[guideName] = { totalRating: 0, count: 0 };
-			}
+				if (!acc[guideName]) {
+					acc[guideName] = { totalRating: 0, count: 0 };
+				}
 
-			if (rating > 0) {
-				acc[guideName].totalRating += rating;
-				acc[guideName].count += 1;
-			}
+				if (rating > 0) {
+					acc[guideName].totalRating += rating;
+					acc[guideName].count += 1;
+				}
 
-			return acc;
-		}, {} as Record<string, { totalRating: number; count: number }>);
+				return acc;
+			},
+			{}
+		);
 
 		return Object.entries(guideStats).map(([name, stats]) => ({
 			name,
@@ -293,18 +306,21 @@ export function calculateWildlifeSightings(data: {
 	previousPeriod: any[];
 }): WildlifeMetric[] {
 	const calculatePeriodSightings = (reviews: any[]) => {
-		const sightings = reviews.reduce((acc, review) => {
-			const animals = (review["Key Sightings"] || "")
-				.split(",")
-				.map((animal: string) => animal.trim())
-				.filter(Boolean);
+		const sightings = reviews.reduce(
+			(acc: Record<string, number>, review) => {
+				const animals = (review["Key Sightings"] || "")
+					.split(",")
+					.map((animal: string) => animal.trim())
+					.filter(Boolean);
 
-			animals.forEach((animal: string) => {
-				acc[animal] = (acc[animal] || 0) + 1;
-			});
+				animals.forEach((animal: string) => {
+					acc[animal] = (acc[animal] || 0) + 1;
+				});
 
-			return acc;
-		}, {} as Record<string, number>);
+				return acc;
+			},
+			{}
+		);
 
 		return Object.entries(sightings).map(([name, value]) => ({
 			name,
@@ -371,23 +387,28 @@ export function calculateActivityCounts(data: {
 	previousPeriod: any[];
 }): ActivityMetric[] {
 	const calculatePeriodActivities = (reviews: any[]) => {
-		const activities = reviews.reduce((acc, review) => {
-			const activities = (review["What activities did you do?"] || "")
-				.split(",")
-				.map((activity: string) => activity.trim())
-				.filter(Boolean);
+		const activities = reviews.reduce(
+			(acc: Record<string, number>, review) => {
+				const activities = (review["What activities did you do?"] || "")
+					.split(",")
+					.map((activity: string) => activity.trim())
+					.filter(Boolean);
 
-			activities.forEach((activity: string) => {
-				acc[activity] = (acc[activity] || 0) + 1;
-			});
+				activities.forEach((activity: string) => {
+					acc[activity] = (acc[activity] || 0) + 1;
+				});
 
-			return acc;
-		}, {} as Record<string, number>);
+				return acc;
+			},
+			{}
+		);
 
-		return Object.entries(activities).map(([name, count]) => ({
-			name,
-			count,
-		}));
+		return Object.entries(activities).map(
+			([name, count]): { name: string; count: number } => ({
+				name,
+				count,
+			})
+		);
 	};
 
 	const currentActivities = calculatePeriodActivities(data.currentPeriod);
@@ -589,7 +610,7 @@ export function calculateStaffMentions(data: {
 		reviews.forEach((review) => {
 			const mentions =
 				review["Did anyone in particular standout?"]?.split(",") || [];
-			mentions.forEach((name) => {
+			mentions.forEach((name: string) => {
 				const trimmedName = name.trim();
 				if (trimmedName) {
 					mentionCounts.set(
@@ -607,12 +628,14 @@ export function calculateStaffMentions(data: {
 	const previousMentions = calculateMentions(data.previousPeriod);
 
 	// Combine all unique names
-	const allNames = new Set([
-		...currentMentions.keys(),
-		...previousMentions.keys(),
-	]);
+	const allNames = Array.from(
+		new Set([
+			...Array.from(currentMentions.keys()),
+			...Array.from(previousMentions.keys()),
+		])
+	);
 
-	return Array.from(allNames)
+	return allNames
 		.map((name) => ({
 			name,
 			mentions: currentMentions.get(name) || 0,
@@ -700,12 +723,12 @@ export function calculateMarketingSources(
 	);
 
 	// Combine and format data
-	const sources = [
-		...new Set([
+	const sources = Array.from(
+		new Set([
 			...Object.keys(currentSources),
 			...Object.keys(previousSources),
-		]),
-	];
+		])
+	);
 
 	return sources
 		.map((source) => ({
@@ -970,30 +993,30 @@ export function calculateGuestNationalities(
 			count,
 			coordinates: countryCoordinates[country],
 		}))
-		.sort((a, b) => b.count - a.count);
+		.sort((a: GuestNationality, b: GuestNationality) => b.count - a.count);
 }
 
 export type GuestComment = {
 	name: string;
 	sentiment: "POSITIVE" | "NEGATIVE";
-	comment: string;
+	comment?: string;
 	date: string;
 };
 
 export function calculateGuestComments(data: ReviewData): GuestComment[] {
-	if (!data?.currentPeriod) {
-		return [];
-	}
+	if (!data?.currentPeriod) return [];
 
 	return data.currentPeriod
-		.filter((review) => review["Any Further Comments or Recommendations?"])
+		.filter((review) =>
+			Boolean(review["Any Further Comments or Recommendations?"])
+		)
 		.map((review) => ({
 			name: review["Full Name"] || "Anonymous",
-			sentiment: review["Overall Comment Sentiment"] || "POSITIVE",
+			sentiment:
+				review["Overall Comment Sentiment"] === "Positive"
+					? "POSITIVE"
+					: "NEGATIVE",
 			comment: review["Any Further Comments or Recommendations?"],
 			date: review["Submitted On (UTC)"],
-		}))
-		.sort(
-			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-		);
+		}));
 }

@@ -11,6 +11,13 @@ export interface Review {
 	"The Food": number;
 	Housekeeping: number;
 	"Our Staff": number;
+	"How did you hear about Taludi?": string;
+	"Name of Travel Agent"?: string;
+	"Any Further Comments or Recommendations?"?: string;
+	"Full Name": string;
+	"Overall Comment Sentiment"?: "Positive" | "Negative";
+	"Submitted On (UTC)": string;
+	Nationality: string;
 	id: string;
 	name: string;
 	date: string;
