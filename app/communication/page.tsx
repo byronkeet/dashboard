@@ -33,9 +33,11 @@ import Papa from "papaparse";
 import {
 	calculateMarketingSources,
 	calculateCommunicationRatings,
+	calculateTopTravelAgents,
 } from "@/lib/calculations/stats";
 import { MarketingSourceChart } from "@/components/communication/marketing-source-chart";
 import { CommunicationRatingsChart } from "@/components/communication/communication-ratings-chart";
+import { TravelAgentsChart } from "@/components/communication/travel-agents-chart";
 
 // Constants for the social media cards
 const socialMediaData = {
@@ -220,6 +222,7 @@ export default function CommunicationPage() {
 
 	const marketingSourceData = calculateMarketingSources(reviewsData);
 	const communicationRatingsData = calculateCommunicationRatings(reviewsData);
+	const travelAgentsData = calculateTopTravelAgents(reviewsData);
 
 	return (
 		<div className='flex-1 space-y-4 p-4 md:p-8 pt-6 pb-16 md:pb-8'>
@@ -362,34 +365,10 @@ export default function CommunicationPage() {
 				/>
 
 				{/* Top Travel Agents */}
-				<Card>
-					<CardHeader>
-						<CardTitle>Top Travel Agents</CardTitle>
-					</CardHeader>
-					<CardContent className='h-[300px] md:h-[350px]'>
-						<ResponsiveContainer
-							width='100%'
-							height='100%'
-						>
-							<BarChart
-								data={agentData}
-								layout='vertical'
-							>
-								<CartesianGrid strokeDasharray='3 3' />
-								<XAxis type='number' />
-								<YAxis
-									dataKey='name'
-									type='category'
-								/>
-								<Tooltip />
-								<Bar
-									dataKey='bookings'
-									fill='#000000'
-								/>
-							</BarChart>
-						</ResponsiveContainer>
-					</CardContent>
-				</Card>
+				<TravelAgentsChart
+					data={travelAgentsData}
+					isLoading={reviewsLoading}
+				/>
 			</div>
 
 			{/* World Map */}

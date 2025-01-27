@@ -748,3 +748,34 @@ export function calculateCommunicationRatings(
 		},
 	];
 }
+
+export type TravelAgent = {
+	name: string;
+	bookings: number;
+};
+
+export function calculateTopTravelAgents(
+	reviewData: ReviewData
+): TravelAgent[] {
+	if (!reviewData?.currentPeriod) {
+		return [];
+	}
+
+	// Count bookings per agent
+	const agentCounts = reviewData.currentPeriod.reduce((acc, review) => {
+		const agent = review["Name of Travel Agent"];
+		if (agent) {
+			acc[agent] = (acc[agent] || 0) + 1;
+		}
+		return acc;
+	}, {} as Record<string, number>);
+
+	// Convert to array and sort by bookings
+	return Object.entries(agentCounts)
+		.map(([name, bookings]) => ({
+			name,
+			bookings,
+		}))
+		.sort((a, b) => b.bookings - a.bookings)
+		.slice(0, 3); // Only return top 3
+}
