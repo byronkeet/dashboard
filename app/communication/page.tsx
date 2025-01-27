@@ -1,34 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { DualDateRangePicker } from "@/components/dashboard/dual-date-range-picker";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useReviews } from "@/lib/hooks/useReviews";
 import { useState, useEffect, useMemo } from "react";
-import {
-	ComposableMap,
-	Geographies,
-	Geography,
-	Marker,
-} from "react-simple-maps";
-import {
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	TooltipProps,
-	PieChart,
-	Pie,
-	Cell,
-	Legend,
-	BarChart,
-	Bar,
-} from "recharts";
-import Papa from "papaparse";
+import { TooltipProps } from "recharts";
 import {
 	calculateMarketingSources,
 	calculateCommunicationRatings,
@@ -196,11 +172,7 @@ export default function CommunicationPage() {
 					Marketing & Communications
 				</h2>
 				<div className='flex items-center space-x-2'>
-					<DualDateRangePicker
-						currentPeriod={currentPeriod}
-						comparablePeriod={comparablePeriod}
-						onUpdate={onDateRangeChange}
-					/>
+					<DualDateRangePicker />
 				</div>
 			</div>
 

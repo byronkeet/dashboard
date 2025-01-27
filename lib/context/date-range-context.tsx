@@ -19,6 +19,7 @@ interface DateRangeContextType {
 	comparablePeriod: DateRange;
 	setCurrentPeriod: (range: DateRange) => void;
 	setComparablePeriod: (range: DateRange) => void;
+	onDateRangeChange: (current: DateRange, comparable: DateRange) => void;
 }
 
 const COOKIE_NAME = "dateRanges";
@@ -106,15 +107,21 @@ export function DateRangeProvider({ children }: { children: ReactNode }) {
 		}
 	}, [currentPeriod, comparablePeriod, mounted]);
 
+	const onDateRangeChange = (current: DateRange, comparable: DateRange) => {
+		setCurrentPeriod(current);
+		setComparablePeriod(comparable);
+	};
+
+	const value = {
+		currentPeriod,
+		comparablePeriod,
+		setCurrentPeriod,
+		setComparablePeriod,
+		onDateRangeChange,
+	};
+
 	return (
-		<DateRangeContext.Provider
-			value={{
-				currentPeriod,
-				comparablePeriod,
-				setCurrentPeriod,
-				setComparablePeriod,
-			}}
-		>
+		<DateRangeContext.Provider value={value}>
 			{children}
 		</DateRangeContext.Provider>
 	);

@@ -117,29 +117,35 @@ function SingleDateRangePicker({
 }
 
 export function DualDateRangePicker() {
-	const {
-		currentPeriod,
-		comparablePeriod,
-		setCurrentPeriod,
-		setComparablePeriod,
-	} = useDateRange();
+	const { currentPeriod, comparablePeriod, onDateRangeChange } =
+		useDateRange();
 
 	return (
 		<div className='flex flex-col md:flex-row gap-4'>
-			<div className='w-full md:w-[250px]'>
-				<SingleDateRangePicker
-					label='Current Period'
-					value={currentPeriod}
-					onChange={setCurrentPeriod}
-				/>
-			</div>
-			<div className='w-full md:w-[250px]'>
-				<SingleDateRangePicker
-					label='Comparable Period'
-					value={comparablePeriod}
-					onChange={setComparablePeriod}
-				/>
-			</div>
+			<SingleDateRangePicker
+				label='Current Period'
+				value={currentPeriod}
+				onChange={(range) => {
+					if (range?.from && range?.to) {
+						onDateRangeChange(
+							{ from: range.from, to: range.to },
+							comparablePeriod
+						);
+					}
+				}}
+			/>
+			<SingleDateRangePicker
+				label='Comparable Period'
+				value={comparablePeriod}
+				onChange={(range) => {
+					if (range?.from && range?.to) {
+						onDateRangeChange(currentPeriod, {
+							from: range.from,
+							to: range.to,
+						});
+					}
+				}}
+			/>
 		</div>
 	);
 }
