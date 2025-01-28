@@ -72,11 +72,21 @@ export function StatCard({
 					{title}
 					{tooltip && (
 						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger>
-									<InfoIcon className='h-4 w-4 text-gray-500' />
+							<Tooltip delayDuration={0}>
+								<TooltipTrigger asChild>
+									<button
+										className='cursor-pointer focus:outline-none touch-manipulation'
+										onClick={(e) => e.preventDefault()}
+									>
+										<InfoIcon className='h-4 w-4 text-gray-500' />
+									</button>
 								</TooltipTrigger>
-								<TooltipContent>
+								<TooltipContent
+									sideOffset={5}
+									onPointerDownOutside={(e) =>
+										e.preventDefault()
+									}
+								>
 									<p>{tooltip}</p>
 								</TooltipContent>
 							</Tooltip>
