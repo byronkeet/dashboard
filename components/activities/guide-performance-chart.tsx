@@ -30,7 +30,7 @@ export function GuidePerformanceChart({
 				<CardHeader>
 					<CardTitle>Guide Ratings vs Trips Taken</CardTitle>
 				</CardHeader>
-				<CardContent className='h-[350px]'>
+				<CardContent className='h-[400px] md:h-[350px]'>
 					<div className='animate-pulse h-full bg-gray-100 rounded' />
 				</CardContent>
 			</Card>
@@ -42,7 +42,7 @@ export function GuidePerformanceChart({
 			<CardHeader>
 				<CardTitle>Guide Ratings vs Trips Taken</CardTitle>
 			</CardHeader>
-			<CardContent className='h-[350px]'>
+			<CardContent className='h-[400px] md:h-[350px]'>
 				<ResponsiveContainer
 					width='100%'
 					height='100%'
@@ -53,11 +53,20 @@ export function GuidePerformanceChart({
 							top: 20,
 							right: 30,
 							left: 20,
-							bottom: 5,
+							bottom: 60,
 						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
-						<XAxis dataKey='name' />
+						<XAxis
+							dataKey='name'
+							angle={-45}
+							textAnchor='end'
+							height={60}
+							interval={0}
+							tick={{
+								fontSize: 12,
+							}}
+						/>
 						<YAxis
 							yAxisId='rating'
 							domain={[0, 5]}

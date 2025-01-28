@@ -19,8 +19,7 @@ import { ActivityComments } from "@/components/activities/activity-comments";
 import { ActivityCountsChart } from "@/components/activities/activity-counts-chart";
 
 export default function ActivitiesPage() {
-	const { currentPeriod, comparablePeriod } =
-		useDateRange();
+	const { currentPeriod, comparablePeriod } = useDateRange();
 
 	const {
 		currentPeriod: currentPeriodReviews,
@@ -76,10 +75,12 @@ export default function ActivitiesPage() {
 					/>
 				</div>
 
-				<GuidePerformanceChart
-					data={guideMetrics}
-					isLoading={reviewsLoading}
-				/>
+				<div className='col-span-1 md:col-span-8 -mx-4 md:mx-0'>
+					<GuidePerformanceChart
+						data={guideMetrics}
+						isLoading={reviewsLoading}
+					/>
+				</div>
 
 				<WildlifeSightingsChart
 					data={wildlifeMetrics}
