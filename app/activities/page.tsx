@@ -75,12 +75,10 @@ export default function ActivitiesPage() {
 					/>
 				</div>
 
-				<div className='col-span-1 md:col-span-8 -mx-4 md:mx-0'>
-					<GuidePerformanceChart
-						data={guideMetrics}
-						isLoading={reviewsLoading}
-					/>
-				</div>
+				<GuidePerformanceChart
+					data={guideMetrics}
+					isLoading={reviewsLoading}
+				/>
 
 				<WildlifeSightingsChart
 					data={wildlifeMetrics}
