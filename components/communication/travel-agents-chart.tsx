@@ -37,7 +37,7 @@ export function TravelAgentsChart({
 			<CardHeader>
 				<CardTitle>Top Travel Agents</CardTitle>
 			</CardHeader>
-			<CardContent className='h-[300px] md:h-[350px]'>
+			<CardContent className='h-[300px] md:h-[350px] -ml-6'>
 				<ResponsiveContainer
 					width='100%'
 					height='100%'
@@ -45,7 +45,12 @@ export function TravelAgentsChart({
 					<BarChart
 						data={data}
 						layout='vertical'
-						margin={{ top: 20, right: 20, bottom: 20, left: 60 }}
+						margin={{
+							top: 20,
+							right: 20,
+							bottom: 20,
+							left: 60,
+						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis type='number' />
@@ -54,7 +59,7 @@ export function TravelAgentsChart({
 							type='category'
 							width={60}
 							style={{
-								fontSize: '12px'
+								fontSize: "12px",
 							}}
 						/>
 						<Tooltip

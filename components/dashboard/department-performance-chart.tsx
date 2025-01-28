@@ -68,18 +68,19 @@ export function DepartmentPerformanceChart({
 			<CardHeader>
 				<CardTitle>Department Performance</CardTitle>
 			</CardHeader>
-			<CardContent className='h-[350px]'>
+			<CardContent className='h-[350px] -ml-6'>
 				<ResponsiveContainer
 					width='100%'
 					height='100%'
 				>
 					<BarChart
 						data={isCompact ? compactData : data}
-						margin={
-							isCompact
-								? { top: 20, right: 10, left: 10, bottom: 60 }
-								: { top: 20, right: 30, left: 20, bottom: 5 }
-						}
+						margin={{
+							top: 20,
+							right: 20,
+							left: 20,
+							bottom: isCompact ? 60 : 5
+						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis

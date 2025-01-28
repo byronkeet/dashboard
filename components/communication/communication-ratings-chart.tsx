@@ -37,15 +37,33 @@ export function CommunicationRatingsChart({
 			<CardHeader>
 				<CardTitle>Communication Rating</CardTitle>
 			</CardHeader>
-			<CardContent className='h-[300px] md:h-[350px]'>
+			<CardContent className='h-[300px] md:h-[350px] -ml-6'>
 				<ResponsiveContainer
 					width='100%'
 					height='100%'
 				>
-					<BarChart data={data}>
+					<BarChart
+						data={data}
+						margin={{
+							top: 20,
+							right: 20,
+							left: 20,
+							bottom: 60,
+						}}
+					>
 						<CartesianGrid strokeDasharray='3 3' />
-						<XAxis dataKey='name' />
-						<YAxis domain={[0, 5]} />
+						<XAxis
+							dataKey='name'
+							angle={-45}
+							textAnchor='end'
+							height={60}
+							interval={0}
+							tick={{ fontSize: 12 }}
+						/>
+						<YAxis
+							domain={[0, 5]}
+							width={40}
+						/>
 						<Tooltip
 							content={({ active, payload }) => {
 								if (active && payload && payload.length) {
