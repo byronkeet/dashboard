@@ -12,6 +12,7 @@ import {
 	calculatePercentageChange,
 	formatPercentageChange,
 } from "@/lib/calculations/stats";
+import { useState, useEffect } from "react";
 
 const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
 
@@ -20,10 +21,29 @@ interface MarketingSourceChartProps {
 	isLoading?: boolean;
 }
 
+function useIsMobile() {
+	const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+
+		return () => window.removeEventListener("resize", checkMobile);
+	}, []);
+
+	return isMobile;
+}
+
 export function MarketingSourceChart({
 	data,
 	isLoading = false,
 }: MarketingSourceChartProps) {
+	const isMobile = useIsMobile();
+
 	if (isLoading) {
 		return (
 			<Card>
@@ -47,13 +67,15 @@ export function MarketingSourceChart({
 					width='100%'
 					height='100%'
 				>
-					<PieChart>
+					<PieChart
+						margin={{ top: 10, right: 0, bottom: 0, left: 0 }}
+					>
 						<Pie
 							data={data}
 							cx='50%'
-							cy='50%'
+							cy='45%'
 							innerRadius={60}
-							outerRadius={80}
+							outerRadius={isMobile ? 70 : 80}
 							fill='#8884d8'
 							paddingAngle={5}
 							dataKey='value'
@@ -107,7 +129,15 @@ export function MarketingSourceChart({
 								return null;
 							}}
 						/>
-						<Legend />
+						<Legend
+							layout='horizontal'
+							verticalAlign='bottom'
+							align='center'
+							wrapperStyle={{
+								paddingTop: "10px",
+								fontSize: isMobile ? "12px" : "14px",
+							}}
+						/>
 					</PieChart>
 				</ResponsiveContainer>
 			</CardContent>
