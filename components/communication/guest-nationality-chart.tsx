@@ -6,7 +6,7 @@ import {
 	Marker,
 } from "react-simple-maps";
 import { GuestNationality } from "@/lib/calculations/stats";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -21,6 +21,7 @@ type TooltipContent = {
 		x: number;
 		y: number;
 	};
+	markerCoordinates: [number, number];
 } | null;
 
 export function GuestNationalityChart({
@@ -28,6 +29,7 @@ export function GuestNationalityChart({
 	isLoading = false,
 }: GuestNationalityChartProps) {
 	const [tooltipContent, setTooltipContent] = useState<TooltipContent>(null);
+	const mapRef = useRef<HTMLDivElement>(null);
 
 	if (isLoading) {
 		return (
@@ -50,7 +52,10 @@ export function GuestNationalityChart({
 				<CardTitle>Guest Nationality</CardTitle>
 			</CardHeader>
 			<CardContent className='p-0'>
-				<div className='w-full aspect-[2/1] relative'>
+				<div
+					className='w-full aspect-[2/1] relative'
+					ref={mapRef}
+				>
 					<ComposableMap
 						projectionConfig={{
 							scale: 130,
@@ -82,37 +87,66 @@ export function GuestNationalityChart({
 								key={country}
 								coordinates={coordinates}
 								onMouseEnter={(evt) => {
+									const rect =
+										mapRef.current?.getBoundingClientRect();
+									if (!rect) return;
+
+									const x = evt.clientX - rect.left;
+									const y = evt.clientY - rect.top;
+
 									setTooltipContent({
 										content: `${country}: ${count} guests`,
-										position: {
-											x: evt.clientX,
-											y: evt.clientY,
-										},
+										position: { x, y },
+										markerCoordinates: coordinates,
+									});
+								}}
+								onTouchStart={(evt) => {
+									evt.preventDefault();
+									const rect =
+										mapRef.current?.getBoundingClientRect();
+									if (!rect) return;
+
+									const touch = evt.touches[0];
+									const x = touch.clientX - rect.left;
+									const y = touch.clientY - rect.top;
+
+									setTooltipContent({
+										content: `${country}: ${count} guests`,
+										position: { x, y },
+										markerCoordinates: coordinates,
 									});
 								}}
 								onMouseLeave={() => setTooltipContent(null)}
+								onTouchEnd={() => setTooltipContent(null)}
 							>
 								<circle
-									r={Math.sqrt(count) * 3}
+									r={Math.max(Math.sqrt(count) * 3, 6)}
 									fill='#3182CE'
 									stroke='#FFFFFF'
 									strokeWidth={1}
 									style={{
 										cursor: "pointer",
 										transition: "all 0.2s ease",
+										touchAction: "none",
 									}}
 									onMouseEnter={(e) => {
 										e.currentTarget.style.fill = "#2C5282";
 										e.currentTarget.setAttribute(
 											"r",
-											(Math.sqrt(count) * 3.5).toString()
+											Math.max(
+												Math.sqrt(count) * 3.5,
+												8
+											).toString()
 										);
 									}}
 									onMouseLeave={(e) => {
 										e.currentTarget.style.fill = "#3182CE";
 										e.currentTarget.setAttribute(
 											"r",
-											(Math.sqrt(count) * 3).toString()
+											Math.max(
+												Math.sqrt(count) * 3,
+												6
+											).toString()
 										);
 									}}
 								/>
@@ -122,9 +156,9 @@ export function GuestNationalityChart({
 					{tooltipContent && (
 						<div
 							style={{
-								position: "fixed",
-								left: tooltipContent.position.x + 10,
-								top: tooltipContent.position.y - 40,
+								position: "absolute",
+								left: `${tooltipContent.position.x}px`,
+								top: `${tooltipContent.position.y - 40}px`,
 								transform: "translateX(-50%)",
 								backgroundColor: "white",
 								padding: "8px 12px",
