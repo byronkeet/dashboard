@@ -79,7 +79,7 @@ export function DepartmentPerformanceChart({
 							top: 20,
 							right: 20,
 							left: 20,
-							bottom: isCompact ? 60 : 5,
+							bottom: 20,
 						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
