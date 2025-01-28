@@ -27,8 +27,8 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className='min-h-screen flex items-center justify-center bg-gray-50'>
-			<Card className='w-full max-w-md'>
+		<main className='fixed inset-0 flex items-center justify-center bg-gray-50 overflow-hidden'>
+			<Card className='w-full max-w-md mx-4'>
 				<CardHeader>
 					<CardTitle className='text-2xl text-center flex items-center justify-center gap-2'>
 						<LogIn className='h-6 w-6' />
@@ -48,6 +48,7 @@ export default function LoginPage() {
 								value={username}
 								onChange={(e) => setUsername(e.target.value)}
 								autoComplete='username'
+								suppressHydrationWarning
 							/>
 						</div>
 						<div className='space-y-2'>
@@ -57,6 +58,7 @@ export default function LoginPage() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								autoComplete='current-password'
+								suppressHydrationWarning
 							/>
 						</div>
 						{error && (
@@ -74,6 +76,6 @@ export default function LoginPage() {
 					</form>
 				</CardContent>
 			</Card>
-		</div>
+		</main>
 	);
 }
