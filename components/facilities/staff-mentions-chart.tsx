@@ -52,7 +52,7 @@ export function StaffMentionsChart({
 							top: 20,
 							right: 20,
 							left: 20,
-							bottom: 60,
+							bottom: 20,
 						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />

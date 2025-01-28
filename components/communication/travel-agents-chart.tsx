@@ -49,7 +49,7 @@ export function TravelAgentsChart({
 							top: 20,
 							right: 20,
 							bottom: 20,
-							left: 60,
+							left: 20,
 						}}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
