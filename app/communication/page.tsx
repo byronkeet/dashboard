@@ -206,7 +206,7 @@ export default function CommunicationPage() {
 
 				{socialSettings.twitter && (
 					<StatCard
-						title='Twitter Followers'
+						title='X Followers'
 						value={socialMediaData.twitter.count.toString()}
 						change={`${
 							socialMediaData.twitter.change >= 0 ? "+" : ""

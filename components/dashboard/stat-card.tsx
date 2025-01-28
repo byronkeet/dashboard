@@ -102,7 +102,7 @@ export function StatCard({
 					</div>
 				) : (
 					<>
-						<div className='text-2xl font-bold'>{value}</div>
+						<div className='text-2xl'>{value}</div>
 						<p className={`text-xs ${changeColor}`}>{change}</p>
 					</>
 				)}
