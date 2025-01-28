@@ -18,7 +18,22 @@ interface WildlifeSightingsChartProps {
 	isLoading?: boolean;
 }
 
-const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
+const WILDLIFE_CATEGORIES = [
+	"Lion",
+	"Cheetah",
+	"Leopard",
+	"Elephant",
+	"Buffalo",
+	"Other",
+] as const;
+const COLORS = [
+	"#000000",
+	"#444444",
+	"#666666",
+	"#777777",
+	"#999999",
+	"#DDDDDD",
+];
 
 export function WildlifeSightingsChart({
 	data,
@@ -37,6 +52,40 @@ export function WildlifeSightingsChart({
 		);
 	}
 
+	// Consolidate data into specified categories
+	const consolidatedData = WILDLIFE_CATEGORIES.map((category) => {
+		if (category === "Other") {
+			// Sum up all values that aren't in the main categories
+			const otherSum = data.reduce((acc, item) => {
+				if (!WILDLIFE_CATEGORIES.includes(item.name as any)) {
+					return acc + item.value;
+				}
+				return acc;
+			}, 0);
+
+			const otherPreviousSum = data.reduce((acc, item) => {
+				if (!WILDLIFE_CATEGORIES.includes(item.name as any)) {
+					return acc + (item.previousValue || 0);
+				}
+				return acc;
+			}, 0);
+
+			return {
+				name: "Other",
+				value: otherSum,
+				previousValue: otherPreviousSum,
+			};
+		}
+
+		// Find the matching category in the original data
+		const categoryData = data.find((item) => item.name === category);
+		return {
+			name: category,
+			value: categoryData?.value || 0,
+			previousValue: categoryData?.previousValue || 0,
+		};
+	}).filter((item) => item.value > 0); // Only show categories with values
+
 	return (
 		<Card className='col-span-1 md:col-span-6'>
 			<CardHeader>
@@ -49,7 +98,7 @@ export function WildlifeSightingsChart({
 				>
 					<PieChart>
 						<Pie
-							data={data}
+							data={consolidatedData}
 							cx='50%'
 							cy='50%'
 							outerRadius={130}
@@ -57,7 +106,7 @@ export function WildlifeSightingsChart({
 							dataKey='value'
 							nameKey='name'
 						>
-							{data.map((entry, index) => (
+							{consolidatedData.map((entry, index) => (
 								<Cell
 									key={`cell-${index}`}
 									fill={COLORS[index % COLORS.length]}
