@@ -1,13 +1,44 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import dns from "dns";
+import { promisify } from "util";
 
 const TRIPADVISOR_API_KEY = process.env.TRIPADVISOR_API_KEY;
 const LOCATION_ID = process.env.TRIPADVISOR_LOCATION_ID;
 
+const lookup = promisify(dns.lookup);
+
 export async function GET(request: Request) {
 	try {
-		// Log the full request details
 		const headersList = await headers();
+
+		// Get server hostname
+		const hostname = headersList.get("host") || "tuludi.zeet.agency";
+
+		// Try to resolve the server IP
+		let serverIp;
+		try {
+			const dnsResult = await lookup(hostname);
+			serverIp = dnsResult.address;
+		} catch (e) {
+			console.error("DNS lookup failed:", e);
+			serverIp = "Could not resolve";
+		}
+
+		// Log all possible IP-related information
+		console.log("Detailed IP Information:", {
+			clientIp: headersList.get("x-forwarded-for"),
+			realIp: headersList.get("x-real-ip"),
+			serverHostname: hostname,
+			resolvedServerIp: serverIp,
+			cfConnectingIp: headersList.get("cf-connecting-ip"),
+			cfIpCountry: headersList.get("cf-ipcountry"),
+			vercelIp: headersList.get("x-vercel-ip"),
+			vercelProxyIp: headersList.get("x-vercel-proxy-ip"),
+			vercelForwardedFor: headersList.get("x-vercel-forwarded-for"),
+		});
+
+		// Log the full request details
 		console.log("Request Debug Info:", {
 			url: request.url,
 			host: headersList.get("host"),
