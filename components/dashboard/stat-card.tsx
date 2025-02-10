@@ -20,7 +20,7 @@ import {
 interface StatCardProps {
 	title: string;
 	value: string;
-	change: string;
+	change?: string;
 	isLoading?: boolean;
 	tooltip?: string;
 	textSize?: string;
@@ -55,7 +55,7 @@ export function StatCard({
 	content = "",
 	icon,
 }: StatCardProps) {
-	const changeValue = parseFloat(change);
+	const changeValue = change ? parseFloat(change) : 0;
 	const changeColor =
 		changeValue > 0
 			? "text-green-600"

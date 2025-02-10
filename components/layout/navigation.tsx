@@ -1,15 +1,28 @@
 "use client";
 
-import { Menu, Home, Users, PawPrint, BarChartIcon, Settings } from 'lucide-react';
+import { Menu, Home, Users, PawPrint, BarChartIcon, SquareKanban, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 const navItems = [
-  { href: "/", icon: <Home size={24} />, label: "Home" },
-  { href: "/activities", icon: <PawPrint size={24} />, label: "Activities" },
-  { href: "/facilities-and-staff", icon: <Users size={24} />, label: "Facilities" },
-  { href: "/communication", icon: <BarChartIcon size={24} />, label: "Communication" },
-  { href: "/settings", icon: <Settings size={24} />, label: "Settings" },
+	{ href: "/", icon: <Home size={24} />, label: "Home" },
+	{ href: "/activities", icon: <PawPrint size={24} />, label: "Activities" },
+	{
+		href: "/facilities-and-staff",
+		icon: <Users size={24} />,
+		label: "Facilities",
+	},
+	{
+		href: "/communication",
+		icon: <BarChartIcon size={24} />,
+		label: "Communication",
+	},
+	{
+		href: "/external-reviews",
+		icon: <SquareKanban size={24} />,
+		label: "External Reviews",
+	},
+	{ href: "/settings", icon: <Settings size={24} />, label: "Settings" },
 ];
 
 export function Navigation() {
