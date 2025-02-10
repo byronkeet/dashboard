@@ -109,32 +109,24 @@ export default function ExternalReviewsPage() {
 						<StatCard
 							title='Google Rating'
 							value={
-								googleData?.stats.averageRating.toString() ??
-								mockGoogleData.stats.averageRating.toString()
-							}
-							change={
-								googleData?.stats.change.rating ??
-								mockGoogleData.stats.change.rating
+								googleData?.stats?.averageRating?.toString() ??
+								"0"
 							}
 							isLoading={isLoading}
-							icon='Compass'
+							icon='ThumbsUp'
 						/>
 						<StatCard
 							title='Total Reviews'
 							value={
-								googleData?.stats.totalReviews.toString() ??
-								mockGoogleData.stats.totalReviews.toString()
-							}
-							change={
-								googleData?.stats.change.count ??
-								mockGoogleData.stats.change.count
+								googleData?.stats?.totalReviews?.toString() ??
+								"0"
 							}
 							isLoading={isLoading}
-							icon='Eye'
+							icon='UsersRound'
 						/>
 					</div>
 					<ReviewsList
-						reviews={googleData?.reviews ?? mockGoogleData.reviews}
+						reviews={googleData?.reviews ?? []}
 						platform='Google'
 						isLoading={isLoading}
 					/>

@@ -40,3 +40,39 @@ export async function fetchTripAdvisorReviews(
 		throw error;
 	}
 }
+
+export async function fetchGoogleReviews(
+	fromDate: Date,
+	toDate: Date
+): Promise<ExternalReviewsData> {
+	try {
+		const params = new URLSearchParams({
+			from: fromDate.toISOString(),
+			to: toDate.toISOString(),
+		});
+
+		const response = await fetch(`/api/external-reviews/google?${params}`);
+		const data = await response.json();
+
+		if (!response.ok) {
+			throw new Error(
+				`API error: ${response.statusText}${
+					data.details ? ` - ${data.details}` : ""
+				}`
+			);
+		}
+
+		if (data.error) {
+			throw new Error(
+				`API error: ${data.error}${
+					data.details ? ` - ${data.details}` : ""
+				}`
+			);
+		}
+
+		return data;
+	} catch (error) {
+		console.error("Error fetching Google reviews:", error);
+		throw error;
+	}
+}

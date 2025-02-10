@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { ExternalReviewsData } from "../types/external-reviews";
-import { fetchTripAdvisorReviews } from "../services/external-reviews";
+import {
+	fetchTripAdvisorReviews,
+	fetchGoogleReviews,
+} from "../services/external-reviews";
 
 export function useExternalReviews(fromDate: Date, toDate: Date) {
 	const [tripAdvisorData, setTripAdvisorData] =
@@ -15,12 +18,13 @@ export function useExternalReviews(fromDate: Date, toDate: Date) {
 		async function fetchData() {
 			try {
 				setIsLoading(true);
-				const taData = await fetchTripAdvisorReviews(fromDate, toDate);
-				setTripAdvisorData(taData);
+				const [taData, gData] = await Promise.all([
+					fetchTripAdvisorReviews(fromDate, toDate),
+					fetchGoogleReviews(fromDate, toDate),
+				]);
 
-				// TODO: Implement Google Reviews fetch
-				// const gData = await fetchGoogleReviews(fromDate, toDate);
-				// setGoogleData(gData);
+				setTripAdvisorData(taData);
+				setGoogleData(gData);
 			} catch (err) {
 				setError(
 					err instanceof Error
