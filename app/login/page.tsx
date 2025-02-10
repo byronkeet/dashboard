@@ -18,15 +18,29 @@ export default function LoginPage() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (
-			username === process.env.NEXT_PUBLIC_USERNAME &&
-			password === process.env.NEXT_PUBLIC_PASSWORD
-		) {
-			login();
-			router.push("/");
-			router.refresh();
-		} else {
-			setError("Invalid credentials");
+		try {
+			const response = await fetch("/api/auth", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					username,
+					password,
+				}),
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				login();
+				router.push("/");
+				router.refresh();
+			} else {
+				setError(data.error || "Invalid credentials");
+			}
+		} catch (error) {
+			setError("An error occurred during login");
 		}
 	};
 
