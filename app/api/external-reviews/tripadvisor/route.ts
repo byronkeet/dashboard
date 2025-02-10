@@ -7,7 +7,7 @@ const LOCATION_ID = process.env.TRIPADVISOR_LOCATION_ID;
 export async function GET(request: Request) {
 	try {
 		// Log the full request details
-		const headersList = headers();
+		const headersList = await headers();
 		console.log("Request Debug Info:", {
 			url: request.url,
 			host: headersList.get("host"),
