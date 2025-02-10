@@ -5,7 +5,18 @@ const LOCATION_ID = process.env.TRIPADVISOR_LOCATION_ID;
 
 export async function GET(request: Request) {
 	try {
+		// Add debug logging
+		console.log("TripAdvisor API Configuration:", {
+			hasApiKey: !!TRIPADVISOR_API_KEY,
+			hasLocationId: !!LOCATION_ID,
+			nodeEnv: process.env.NODE_ENV,
+		});
+
 		if (!TRIPADVISOR_API_KEY || !LOCATION_ID) {
+			console.error("Missing configuration:", {
+				apiKey: !TRIPADVISOR_API_KEY ? "missing" : "present",
+				locationId: !LOCATION_ID ? "missing" : "present",
+			});
 			return NextResponse.json(
 				{ error: "TripAdvisor configuration missing" },
 				{ status: 500 }
@@ -13,17 +24,40 @@ export async function GET(request: Request) {
 		}
 
 		// Fetch both details and reviews
+		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en&key=${TRIPADVISOR_API_KEY}`;
+		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en&key=${TRIPADVISOR_API_KEY}`;
+
+		console.log("Fetching TripAdvisor data...");
+
 		const [detailsResponse, reviewsResponse] = await Promise.all([
-			fetch(
-				`https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en&key=${TRIPADVISOR_API_KEY}`
-			),
-			fetch(
-				`https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en&key=${TRIPADVISOR_API_KEY}`
-			),
+			fetch(detailsUrl),
+			fetch(reviewsUrl),
 		]);
 
+		// Log response status
+		console.log("API Response Status:", {
+			details: detailsResponse.status,
+			reviews: reviewsResponse.status,
+		});
+
 		if (!detailsResponse.ok || !reviewsResponse.ok) {
-			throw new Error("Failed to fetch TripAdvisor data");
+			const detailsText = await detailsResponse.text();
+			const reviewsText = await reviewsResponse.text();
+
+			console.error("TripAdvisor API Error Responses:", {
+				details: {
+					status: detailsResponse.status,
+					body: detailsText,
+				},
+				reviews: {
+					status: reviewsResponse.status,
+					body: reviewsText,
+				},
+			});
+
+			throw new Error(
+				`Failed to fetch TripAdvisor data: Details(${detailsResponse.status}), Reviews(${reviewsResponse.status})`
+			);
 		}
 
 		const [detailsData, reviewsData] = await Promise.all([
@@ -83,9 +117,17 @@ export async function GET(request: Request) {
 
 		return NextResponse.json(processedData);
 	} catch (error) {
-		console.error("Error in TripAdvisor API route:", error);
+		console.error("Error in TripAdvisor API route:", {
+			message: error instanceof Error ? error.message : "Unknown error",
+			stack: error instanceof Error ? error.stack : undefined,
+		});
+
 		return NextResponse.json(
-			{ error: "Failed to fetch TripAdvisor data" },
+			{
+				error: "Failed to fetch TripAdvisor data",
+				details:
+					error instanceof Error ? error.message : "Unknown error",
+			},
 			{ status: 500 }
 		);
 	}
