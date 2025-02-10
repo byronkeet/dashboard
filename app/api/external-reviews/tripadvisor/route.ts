@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-const TRIPADVISOR_API_KEY = process.env.NEXT_PUBLIC_TRIPADVISOR_API_KEY;
-const LOCATION_ID = process.env.NEXT_PUBLIC_TRIPADVISOR_LOCATION_ID;
+const TRIPADVISOR_API_KEY = process.env.TRIPADVISOR_API_KEY;
+const LOCATION_ID = process.env.TRIPADVISOR_LOCATION_ID;
 
 export async function GET(request: Request) {
 	try {

@@ -8,14 +8,6 @@ export async function fetchTripAdvisorReviews(
 	toDate: Date
 ): Promise<ExternalReviewsData> {
 	try {
-		// Only return mock data if no API key
-		if (!process.env.NEXT_PUBLIC_TRIPADVISOR_API_KEY) {
-			const { mockTripAdvisorData } = await import(
-				"../mocks/external-reviews"
-			);
-			return mockTripAdvisorData;
-		}
-
 		const params = new URLSearchParams({
 			from: fromDate.toISOString(),
 			to: toDate.toISOString(),
@@ -24,7 +16,6 @@ export async function fetchTripAdvisorReviews(
 		const response = await fetch(
 			`/api/external-reviews/tripadvisor?${params}`
 		);
-
 		const data = await response.json();
 
 		if (!response.ok) {
