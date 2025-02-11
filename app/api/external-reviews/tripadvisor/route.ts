@@ -65,59 +65,34 @@ export async function GET(request: Request) {
 			);
 		}
 
-		// Create the request options with additional headers
+		// Create the request options with correct authentication
 		const requestOptions = {
 			headers: {
-				Authorization: `Bearer ${TRIPADVISOR_API_KEY}`,
 				Accept: "application/json",
 				"Accept-Encoding": "gzip",
-				"X-TripAdvisor-API-Key": TRIPADVISOR_API_KEY,
-				"User-Agent": "Tuludi/1.0",
-				Host: "api.content.tripadvisor.com",
-				Origin: "https://tuludi.zeet.agency",
-				Referer: "https://tuludi.zeet.agency/",
 			},
 		};
 
-		// Construct the URLs
-		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en`;
-		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en`;
+		// Construct the URLs with the API key as a query parameter
+		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?key=${TRIPADVISOR_API_KEY}&language=en`;
+		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?key=${TRIPADVISOR_API_KEY}&language=en`;
 
-		console.log(
-			"Making TripAdvisor API requests with headers:",
-			requestOptions
-		);
+		console.log("Making TripAdvisor API requests...");
 
 		const [detailsResponse, reviewsResponse] = await Promise.all([
 			fetch(detailsUrl, requestOptions),
 			fetch(reviewsUrl, requestOptions),
 		]);
 
-		// Log the response headers for debugging
-		console.log("Details Response Headers:", {
-			status: detailsResponse.status,
-			headers: Object.fromEntries(detailsResponse.headers.entries()),
-		});
-
-		console.log("Reviews Response Headers:", {
-			status: reviewsResponse.status,
-			headers: Object.fromEntries(reviewsResponse.headers.entries()),
+		// Log the response headers for debugging (without exposing the API key)
+		console.log("Response Status:", {
+			details: detailsResponse.status,
+			reviews: reviewsResponse.status,
 		});
 
 		if (!detailsResponse.ok || !reviewsResponse.ok) {
 			const detailsText = await detailsResponse.text();
 			const reviewsText = await reviewsResponse.text();
-
-			console.error("TripAdvisor API Error Responses:", {
-				details: {
-					status: detailsResponse.status,
-					body: detailsText,
-				},
-				reviews: {
-					status: reviewsResponse.status,
-					body: reviewsText,
-				},
-			});
 
 			throw new Error(
 				`Failed to fetch TripAdvisor data: Details(${detailsResponse.status}), Reviews(${reviewsResponse.status})`
