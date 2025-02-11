@@ -65,27 +65,19 @@ export async function GET(request: Request) {
 			);
 		}
 
-		// Create the request options with correct authentication
-		const requestOptions = {
-			headers: {
-				Accept: "application/json",
-				"Accept-Encoding": "gzip",
-			},
-		};
+		// Fetch both details and reviews
+		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en&key=${TRIPADVISOR_API_KEY}`;
+		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en&key=${TRIPADVISOR_API_KEY}`;
 
-		// Construct the URLs with the API key as a query parameter
-		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?key=${TRIPADVISOR_API_KEY}&language=en`;
-		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?key=${TRIPADVISOR_API_KEY}&language=en`;
-
-		console.log("Making TripAdvisor API requests...");
+		console.log("Fetching TripAdvisor data...");
 
 		const [detailsResponse, reviewsResponse] = await Promise.all([
-			fetch(detailsUrl, requestOptions),
-			fetch(reviewsUrl, requestOptions),
+			fetch(detailsUrl),
+			fetch(reviewsUrl),
 		]);
 
-		// Log the response headers for debugging (without exposing the API key)
-		console.log("Response Status:", {
+		// Log response status
+		console.log("API Response Status:", {
 			details: detailsResponse.status,
 			reviews: reviewsResponse.status,
 		});
@@ -93,6 +85,17 @@ export async function GET(request: Request) {
 		if (!detailsResponse.ok || !reviewsResponse.ok) {
 			const detailsText = await detailsResponse.text();
 			const reviewsText = await reviewsResponse.text();
+
+			console.error("TripAdvisor API Error Responses:", {
+				details: {
+					status: detailsResponse.status,
+					body: detailsText,
+				},
+				reviews: {
+					status: reviewsResponse.status,
+					body: reviewsText,
+				},
+			});
 
 			throw new Error(
 				`Failed to fetch TripAdvisor data: Details(${detailsResponse.status}), Reviews(${reviewsResponse.status})`
