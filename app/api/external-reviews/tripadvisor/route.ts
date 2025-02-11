@@ -65,21 +65,43 @@ export async function GET(request: Request) {
 			);
 		}
 
-		// Fetch both details and reviews
-		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en&key=${TRIPADVISOR_API_KEY}`;
-		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en&key=${TRIPADVISOR_API_KEY}`;
+		// Create the request options with additional headers
+		const requestOptions = {
+			headers: {
+				Authorization: `Bearer ${TRIPADVISOR_API_KEY}`,
+				Accept: "application/json",
+				"Accept-Encoding": "gzip",
+				"X-TripAdvisor-API-Key": TRIPADVISOR_API_KEY,
+				"User-Agent": "Tuludi/1.0",
+				Host: "api.content.tripadvisor.com",
+				Origin: "https://tuludi.zeet.agency",
+				Referer: "https://tuludi.zeet.agency/",
+			},
+		};
 
-		console.log("Fetching TripAdvisor data...");
+		// Construct the URLs
+		const detailsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/details?language=en`;
+		const reviewsUrl = `https://api.content.tripadvisor.com/api/v1/location/${LOCATION_ID}/reviews?language=en`;
+
+		console.log(
+			"Making TripAdvisor API requests with headers:",
+			requestOptions
+		);
 
 		const [detailsResponse, reviewsResponse] = await Promise.all([
-			fetch(detailsUrl),
-			fetch(reviewsUrl),
+			fetch(detailsUrl, requestOptions),
+			fetch(reviewsUrl, requestOptions),
 		]);
 
-		// Log response status
-		console.log("API Response Status:", {
-			details: detailsResponse.status,
-			reviews: reviewsResponse.status,
+		// Log the response headers for debugging
+		console.log("Details Response Headers:", {
+			status: detailsResponse.status,
+			headers: Object.fromEntries(detailsResponse.headers.entries()),
+		});
+
+		console.log("Reviews Response Headers:", {
+			status: reviewsResponse.status,
+			headers: Object.fromEntries(reviewsResponse.headers.entries()),
 		});
 
 		if (!detailsResponse.ok || !reviewsResponse.ok) {
