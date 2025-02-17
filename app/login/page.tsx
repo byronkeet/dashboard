@@ -86,7 +86,7 @@ export default function LoginPage() {
 						)}
 						<Button
 							type='submit'
-							className='w-full'
+							className='w-full bg-[#444444] hover:bg-[#333333]'
 							suppressHydrationWarning
 						>
 							Sign In

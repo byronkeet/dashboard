@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export function ClientLayout({ children }: { children: React.ReactNode }) {
 	const { isAuthenticated, logout } = useAuth();
 	const lodgeName = process.env.NEXT_PUBLIC_LODGE_NAME || "Lodge";
+	const userName = process.env.NEXT_PUBLIC_USERNAME || "Admin";
 
 	return (
 		<DateRangeProvider>
@@ -40,14 +41,19 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 											<Button
 												variant='ghost'
 												size='sm'
-												className='flex items-center gap-2 hover:bg-accent'
+												className='flex items-center gap-3 hover:bg-accent'
 											>
-												<span className='font-medium hidden md:inline'>
-													{lodgeName}
-												</span>
+												<div className='text-right hidden md:block'>
+													<div className='font-semibold text-base text-[#444444]'>
+														{userName}
+													</div>
+													<div className='text-xs text-gray-500'>
+														{lodgeName}
+													</div>
+												</div>
 												<Avatar className='h-8 w-8'>
 													<AvatarFallback className='bg-primary/10 text-primary'>
-														{lodgeName.charAt(0)}
+														{userName.charAt(0)}
 													</AvatarFallback>
 												</Avatar>
 											</Button>
