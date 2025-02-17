@@ -54,6 +54,7 @@ export function StaffMentionsChart({
 							left: 20,
 							bottom: 20,
 						}}
+						barSize={15}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis

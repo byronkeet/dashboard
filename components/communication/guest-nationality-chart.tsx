@@ -121,7 +121,7 @@ export function GuestNationalityChart({
 							>
 								<circle
 									r={Math.max(Math.sqrt(count) * 3, 6)}
-									fill='#3182CE'
+									fill='#B5854B'
 									stroke='#FFFFFF'
 									strokeWidth={1}
 									style={{
@@ -130,7 +130,7 @@ export function GuestNationalityChart({
 										touchAction: "none",
 									}}
 									onMouseEnter={(e) => {
-										e.currentTarget.style.fill = "#2C5282";
+										e.currentTarget.style.fill = "#666666";
 										e.currentTarget.setAttribute(
 											"r",
 											Math.max(
@@ -140,7 +140,7 @@ export function GuestNationalityChart({
 										);
 									}}
 									onMouseLeave={(e) => {
-										e.currentTarget.style.fill = "#3182CE";
+										e.currentTarget.style.fill = "#B5854B";
 										e.currentTarget.setAttribute(
 											"r",
 											Math.max(

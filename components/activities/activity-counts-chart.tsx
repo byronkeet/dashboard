@@ -54,6 +54,7 @@ export function ActivityCountsChart({
 							left: 20,
 							bottom: 60,
 						}}
+						barSize={15}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis

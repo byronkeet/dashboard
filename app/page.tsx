@@ -91,7 +91,7 @@ export default function Dashboard() {
 					change={guestStats.change}
 					isLoading={isLoading}
 					textSize='text-sm font-medium'
-					backgroundColor='bg-gray-900'
+					backgroundColor='bg-[#444444]'
 					textColor='text-white'
 					icon='UsersRound'
 				/>

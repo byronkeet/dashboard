@@ -46,7 +46,7 @@ type GuestComment = {
 	comment: string;
 };
 
-const CHART_COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
+const CHART_COLORS = ["#B5854B", "#000000", "#666666", "#999999"];
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 export default function CommunicationPage() {
@@ -90,29 +90,6 @@ export default function CommunicationPage() {
 			setSocialSettings(JSON.parse(savedSettings));
 		}
 	}, []);
-
-	// Marketing source data
-	const [marketingData] = useState([
-		{ name: "Direct", value: 30 },
-		{ name: "Social", value: 25 },
-		{ name: "Email", value: 25 },
-		{ name: "Other", value: 20 },
-	]);
-
-	// Communication ratings data
-	const [ratingData] = useState([
-		{ name: "Excellent", value: 45 },
-		{ name: "Good", value: 35 },
-		{ name: "Average", value: 15 },
-		{ name: "Poor", value: 5 },
-	]);
-
-	// Top travel agents data
-	const [agentData] = useState([
-		{ name: "SGP Travel", bookings: 25 },
-		{ name: "STA Travel", bookings: 18 },
-		{ name: "Thompsons", bookings: 12 },
-	]);
 
 	const guestCommentsData = useMemo(
 		() => calculateGuestComments(reviewsData),

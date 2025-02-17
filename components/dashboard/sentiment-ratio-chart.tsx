@@ -14,7 +14,7 @@ interface SentimentRatioChartProps {
 	isLoading?: boolean;
 }
 
-const COLORS = ["#000000", "#666666"];
+const COLORS = ["#B5854B", "#666666"];
 
 export function SentimentRatioChart({
 	data,

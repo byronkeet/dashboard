@@ -800,7 +800,7 @@ export function calculateTopTravelAgents(
 			bookings,
 		}))
 		.sort((a, b) => b.bookings - a.bookings)
-		.slice(0, 3); // Only return top 3
+		.slice(0, 5); // Only return top 3
 }
 
 // Add at the top of the file

@@ -55,6 +55,7 @@ export function GuidePerformanceChart({
 							left: 0,
 							bottom: 20,
 						}}
+						barSize={15}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis
@@ -142,7 +143,7 @@ export function GuidePerformanceChart({
 							yAxisId='rating'
 							dataKey='rating'
 							name='Rating'
-							fill='#000000'
+							fill='#B5854B'
 						/>
 						<Bar
 							yAxisId='trips'

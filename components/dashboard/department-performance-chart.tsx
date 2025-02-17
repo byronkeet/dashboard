@@ -8,6 +8,7 @@ import {
 	Tooltip,
 	Legend,
 	ResponsiveContainer,
+	Cell,
 } from "recharts";
 import { DepartmentMetric } from "@/lib/calculations/department-performance";
 import { useEffect, useState } from "react";
@@ -16,6 +17,14 @@ interface DepartmentPerformanceChartProps {
 	data: DepartmentMetric[];
 	isLoading?: boolean;
 }
+
+const DEPARTMENT_COLORS = {
+	Accommodation: "#B5854B",
+	Food: "#444444",
+	Facilities: "#000000",
+	Housekeeping: "#666666",
+	Staff: "#999999",
+};
 
 export function DepartmentPerformanceChart({
 	data,
@@ -81,6 +90,7 @@ export function DepartmentPerformanceChart({
 							left: 20,
 							bottom: 20,
 						}}
+						barSize={15}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis
@@ -136,13 +146,34 @@ export function DepartmentPerformanceChart({
 						<Bar
 							dataKey='current'
 							name='Current Period'
-							fill='#000000'
-						/>
+						>
+							{data.map((entry) => (
+								<Cell
+									key={`cell-${entry.name}`}
+									fill={
+										DEPARTMENT_COLORS[
+											entry.name as keyof typeof DEPARTMENT_COLORS
+										]
+									}
+								/>
+							))}
+						</Bar>
 						<Bar
 							dataKey='previous'
 							name='Previous Period'
-							fill='#666666'
-						/>
+						>
+							{data.map((entry) => (
+								<Cell
+									key={`cell-${entry.name}`}
+									fill={
+										DEPARTMENT_COLORS[
+											entry.name as keyof typeof DEPARTMENT_COLORS
+										]
+									}
+									opacity={0.5}
+								/>
+							))}
+						</Bar>
 					</BarChart>
 				</ResponsiveContainer>
 			</CardContent>

@@ -45,7 +45,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<main className='fixed inset-0 flex items-center justify-center bg-gray-50 overflow-hidden'>
+		<main className='fixed inset-0 flex items-center justify-center overflow-hidden'>
 			<Card className='w-full max-w-md mx-4'>
 				<CardHeader>
 					<CardTitle className='text-2xl text-center flex items-center justify-center gap-2'>

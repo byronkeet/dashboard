@@ -14,7 +14,7 @@ import {
 } from "@/lib/calculations/stats";
 import { useState, useEffect } from "react";
 
-const COLORS = ["#000000", "#666666", "#999999", "#CCCCCC"];
+const COLORS = ["#B5854B", "#000000", "#666666", "#999999"];
 
 interface MarketingSourceChartProps {
 	data: MarketingSource[];

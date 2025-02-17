@@ -145,7 +145,7 @@ export default function FacilitiesStaffPage() {
 					isLoading={reviewsLoading}
 					tooltip='Average of all department ratings'
 					format='percentage'
-					backgroundColor='bg-gray-900'
+					backgroundColor='bg-[#444444]'
 					textColor='text-white'
 				/>
 			</div>

@@ -51,6 +51,7 @@ export function TravelAgentsChart({
 							bottom: 20,
 							left: 20,
 						}}
+						barSize={15}
 					>
 						<CartesianGrid strokeDasharray='3 3' />
 						<XAxis type='number' />

@@ -27,12 +27,12 @@ const WILDLIFE_CATEGORIES = [
 	"Other",
 ] as const;
 const COLORS = [
+	"#B5854B",
 	"#000000",
 	"#444444",
 	"#666666",
 	"#777777",
 	"#999999",
-	"#DDDDDD",
 ];
 
 export function WildlifeSightingsChart({

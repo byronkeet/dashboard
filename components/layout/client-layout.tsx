@@ -23,13 +23,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 				<Navigation />
 
 				{/* Main Content */}
-				<div className='flex-1 bg-gray-50 pb-16 md:pb-0 md:ml-16'>
+				<div className='flex-1 pb-16 md:pb-0 md:ml-16'>
 					<header className='sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
 						<div className='flex h-14 items-center justify-between'>
 							<div className='px-4 md:px-8'>
 								<img
-									src='https://www.tripmate.co.za/logo1.png'
-									alt='Trip Mate'
+									src='/amava.svg'
+									alt='Amava'
 									className='h-6 md:h-8 w-auto'
 								/>
 							</div>

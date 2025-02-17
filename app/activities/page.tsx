@@ -62,7 +62,7 @@ export default function ActivitiesPage() {
 						change={wesStats.change}
 						isLoading={reviewsLoading}
 						tooltip='Average Wildlife Experience Score'
-						backgroundColor='bg-gray-900'
+						backgroundColor='bg-[#444444]'
 						textColor='text-white'
 					/>
 

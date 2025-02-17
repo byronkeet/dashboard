@@ -5,7 +5,6 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { ReviewsList } from "@/components/external-reviews/reviews-list";
 import { useDateRange } from "@/lib/context/date-range-context";
 import { useExternalReviews } from "@/lib/hooks/useExternalReviews";
-import { mockGoogleData } from "@/lib/mocks/external-reviews";
 
 export default function ExternalReviewsPage() {
 	const { currentPeriod } = useDateRange();
@@ -37,6 +36,8 @@ export default function ExternalReviewsPage() {
 							}
 							isLoading={isLoading}
 							icon='ThumbsUp'
+							backgroundColor='bg-[#444444]'
+							textColor='text-white'
 						/>
 						<StatCard
 							title='Total Reviews'
@@ -114,6 +115,8 @@ export default function ExternalReviewsPage() {
 							}
 							isLoading={isLoading}
 							icon='ThumbsUp'
+							backgroundColor='bg-[#444444]'
+							textColor='text-white'
 						/>
 						<StatCard
 							title='Total Reviews'
