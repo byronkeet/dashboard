@@ -18,14 +18,6 @@ interface DepartmentPerformanceChartProps {
 	isLoading?: boolean;
 }
 
-const DEPARTMENT_COLORS = {
-	Accommodation: "#B5854B",
-	Food: "#444444",
-	Facilities: "#000000",
-	Housekeeping: "#666666",
-	Staff: "#999999",
-};
-
 export function DepartmentPerformanceChart({
 	data,
 	isLoading = false,
@@ -109,25 +101,21 @@ export function DepartmentPerformanceChart({
 						<Tooltip
 							content={({ active, payload, label }) => {
 								if (active && payload && payload.length) {
-									// Show full department name in tooltip
-									const fullName =
-										data.find(
-											(d) =>
-												d.name.startsWith(label) ||
-												label.startsWith(d.name)
-										)?.name || label;
-
 									return (
 										<div className='bg-white p-4 rounded-lg shadow-lg border border-gray-200'>
 											<p className='text-sm font-medium text-gray-900'>
-												{fullName}
+												{label}
 											</p>
 											{payload.map((entry: any) => (
 												<p
 													key={entry.dataKey}
 													className='text-sm'
 													style={{
-														color: entry.color,
+														color:
+															entry.dataKey ===
+															"current"
+																? "#B5854B"
+																: "#666666",
 													}}
 												>
 													{entry.dataKey === "current"
@@ -146,34 +134,13 @@ export function DepartmentPerformanceChart({
 						<Bar
 							dataKey='current'
 							name='Current Period'
-						>
-							{data.map((entry) => (
-								<Cell
-									key={`cell-${entry.name}`}
-									fill={
-										DEPARTMENT_COLORS[
-											entry.name as keyof typeof DEPARTMENT_COLORS
-										]
-									}
-								/>
-							))}
-						</Bar>
+							fill='#B5854B'
+						/>
 						<Bar
 							dataKey='previous'
 							name='Previous Period'
-						>
-							{data.map((entry) => (
-								<Cell
-									key={`cell-${entry.name}`}
-									fill={
-										DEPARTMENT_COLORS[
-											entry.name as keyof typeof DEPARTMENT_COLORS
-										]
-									}
-									opacity={0.5}
-								/>
-							))}
-						</Bar>
+							fill='#666666'
+						/>
 					</BarChart>
 				</ResponsiveContainer>
 			</CardContent>
