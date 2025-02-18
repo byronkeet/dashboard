@@ -17,6 +17,7 @@ import {
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
 import { PaginationNumbers } from "@/components/ui/pagination-numbers";
+import { useState } from "react";
 
 interface Review {
 	id: string;
@@ -46,21 +47,32 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 	const excludeFields = [
 		"id",
 		"tableData",
-		"Any Further Comments or Recommendations about our wildlife experience?",
-		"Any Further Comments or Recommendations about our hospitality?",
-		"Any Further Comments or Recommendations?",
+		"created_at",
+		"Wildlife Comment Sentiment",
+		"Hospitality Comment Sentiment",
+		"Overall Comment Sentiment",
 	];
 
 	// Group fields by category
-	const fieldGroups = {
-		"General Information": ["Full Name", "Submitted On (UTC)", "Email"],
+	const fieldGroups: Record<string, string[]> = {
+		"General Information": [
+			"Full Name",
+			"Email Address",
+			"Submitted On (UTC)",
+			"Nationality",
+			"Name of Travel Agent",
+		],
 		"Trip Experience": [
 			"Overall Trip Experience",
-			"Overall Wildlife Experience",
 			"Would you recommend Tuludi to your friends?",
-			"What was the highlight of your stay?",
 		],
-		Ratings: [
+		"Wildlife Experience": [
+			"Overall Wildlife Experience",
+			"Rate Your Guide",
+			"Your Guide",
+			"Key Sightings",
+		],
+		"Accommodation & Facilities": [
 			"Your Accommodation",
 			"The Camp Facilities",
 			"The Food",
@@ -78,6 +90,7 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 					"Any Further Comments or Recommendations about our wildlife experience?"
 				],
 			icon: "🦁",
+			sentiment: review["Wildlife Comment Sentiment"],
 		},
 		{
 			title: "Hospitality Comments",
@@ -86,13 +99,32 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 					"Any Further Comments or Recommendations about our hospitality?"
 				],
 			icon: "🏠",
+			sentiment: review["Hospitality Comment Sentiment"],
 		},
 		{
 			title: "General Comments",
 			content: review["Any Further Comments or Recommendations?"],
 			icon: "💭",
+			sentiment: review["Overall Comment Sentiment"],
 		},
 	];
+
+	// Get all remaining fields that aren't in any group
+	const allGroupedFields = [
+		...excludeFields,
+		...Object.values(fieldGroups).flat(),
+		"Email Address",
+	];
+	const remainingFields = Object.keys(review).filter(
+		(field) =>
+			!allGroupedFields.includes(field) &&
+			!comments.some((c) => c.content === review[field])
+	);
+
+	// Add remaining fields to a "Other Information" group if any exist
+	if (remainingFields.length > 0) {
+		fieldGroups["Other Information"] = remainingFields;
+	}
 
 	return (
 		<div className='max-h-[80vh] overflow-y-auto px-4'>
@@ -127,6 +159,22 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 								value = `${(value * 10).toFixed(0)}%`;
 							}
 
+							// Format other ratings (out of 5)
+							if (
+								typeof value === "number" &&
+								(field.includes("Rating") ||
+									[
+										"Your Accommodation",
+										"The Camp Facilities",
+										"The Food",
+										"Housekeeping",
+										"Our Staff",
+										"Rate Your Guide",
+									].includes(field))
+							) {
+								value = `${value}/5`;
+							}
+
 							return (
 								<div
 									key={field}
@@ -147,7 +195,7 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 			<div className='mb-6'>
 				<h3 className='font-semibold text-lg mb-3'>Comments</h3>
 				<div className='space-y-4'>
-					{comments.map(({ title, content, icon }) => {
+					{comments.map(({ title, content, icon, sentiment }) => {
 						if (!content) return null;
 
 						return (
@@ -155,11 +203,25 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 								key={title}
 								className='bg-gray-50 rounded-lg p-4 border border-gray-100'
 							>
-								<div className='flex items-center gap-2 mb-2'>
-									<span className='text-xl'>{icon}</span>
-									<h4 className='font-medium text-gray-900'>
-										{title}
-									</h4>
+								<div className='flex items-start justify-between mb-2'>
+									<div className='flex items-center gap-2'>
+										<span className='text-xl'>{icon}</span>
+										<h4 className='font-medium text-gray-900'>
+											{title}
+										</h4>
+									</div>
+									{sentiment && (
+										<span
+											className={`px-2 py-1 rounded-md text-xs ${
+												sentiment.toUpperCase() ===
+												"POSITIVE"
+													? "bg-green-100 text-green-800"
+													: "bg-red-100 text-red-800"
+											}`}
+										>
+											{sentiment.toUpperCase()}
+										</span>
+									)}
 								</div>
 								<p className='text-sm text-gray-600 whitespace-pre-wrap'>
 									{content}
@@ -170,6 +232,97 @@ function ReviewDetails({ review }: ReviewDetailsProps) {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+function ReviewDialogContent({ review }: { review: Review }) {
+	const [showEmailInput, setShowEmailInput] = useState(false);
+	const [emails, setEmails] = useState("");
+	const [status, setStatus] = useState<
+		"idle" | "loading" | "success" | "error"
+	>("idle");
+
+	const handleEmailSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setStatus("loading");
+		try {
+			const response = await fetch(
+				"https://n8n.zeet.agency/webhook/tuludi-email-review",
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ emails, review }),
+				}
+			);
+			if (response.ok) {
+				setStatus("success");
+				setEmails("");
+			} else {
+				setStatus("error");
+			}
+		} catch (error) {
+			setStatus("error");
+		}
+	};
+
+	return (
+		<>
+			<DialogHeader>
+				<DialogTitle>Review Details</DialogTitle>
+			</DialogHeader>
+			<ReviewDetails review={review} />
+			<div className='mt-4 border-t pt-4'>
+				{!showEmailInput ? (
+					<Button
+						onClick={() => setShowEmailInput(true)}
+						variant='outline'
+						size='sm'
+					>
+						Email
+					</Button>
+				) : (
+					<form
+						onSubmit={handleEmailSubmit}
+						className='flex flex-col space-y-2'
+					>
+						<input
+							value={emails}
+							onChange={(e) => setEmails(e.target.value)}
+							placeholder='Enter emails separated by comma'
+							className='border p-2 rounded'
+						/>
+						<div className='flex items-center gap-2'>
+							<Button
+								type='submit'
+								size='sm'
+							>
+								Send Email
+							</Button>
+							<Button
+								onClick={() => setShowEmailInput(false)}
+								size='sm'
+								variant='ghost'
+							>
+								Cancel
+							</Button>
+						</div>
+						{status === "loading" && (
+							<p className='text-sm text-gray-500'>Sending...</p>
+						)}
+						{status === "success" && (
+							<p className='text-sm text-green-600'>
+								Email sent successfully.
+							</p>
+						)}
+						{status === "error" && (
+							<p className='text-sm text-red-600'>
+								Failed to send email.
+							</p>
+						)}
+					</form>
+				)}
+			</div>
+		</>
 	);
 }
 
@@ -255,13 +408,10 @@ export function RecentReviewsTable({
 												View
 											</Button>
 										</DialogTrigger>
-										<DialogContent className='max-w-2xl'>
-											<DialogHeader>
-												<DialogTitle>
-													Review Details
-												</DialogTitle>
-											</DialogHeader>
-											<ReviewDetails review={review} />
+										<DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
+											<ReviewDialogContent
+												review={review}
+											/>
 										</DialogContent>
 									</Dialog>
 								</TableCell>
